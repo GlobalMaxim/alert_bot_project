@@ -1,0 +1,27 @@
+version: '3.6'
+services:
+  redis:
+    container_name: 'redis'
+    image: 'redis'
+    command: redis-server
+    restart: always
+    ports: 
+      - 6379:6379
+    environment: 
+      - ALLOW_EMPTY_PASSWORD=Yes
+    volumes:
+      - ./docker/redis:/usr/local/etc/redis/redis.conf
+    mem_limit: 65536m
+  db:
+    container_name: 'my-sql'
+    image: 'mysql:latest'
+    restart: always
+    ports: 
+      - 43306:3306
+    environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: alert_bot_new
+        MYSQL_PASSWORD: qwerty1998
+        MYSQL_USER: maxim
+    volumes:
+      - ./docker/db:/var/lib/mysql
