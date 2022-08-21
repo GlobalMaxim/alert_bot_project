@@ -4,7 +4,7 @@ from aiogram.types import ParseMode, ChatJoinRequest
 from mailing.mailing import Mailing
 from telebot import dp, bot
 from aiogram.types import Message, ReplyKeyboardRemove
-from config import admin_id, CHANEL_ID
+from config import admin_id, CHANEL_ID, ANSWER_TEXT
 from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher.filters import Text
 from keyboards.default.menu import menu, menu_2, show_chanels
@@ -42,7 +42,7 @@ async def register_user(message: Message | ChatJoinRequest):
     else:
         msg = await bot.send_message(chat_id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
         await bot.delete_message(chat_id, msg['message_id'])
-        await bot.send_message(chat_id, "❗️Щоб користуватися ботом потрібно підписатися на канал @ukraine_golovne", reply_markup=show_chanels())
+        await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
 @dp.message_handler(Text(equals=["/restart"]))
 async def register_user(message: Message):
     if await check_sub_chanel(CHANEL_ID[0], message.from_user.id):
@@ -58,7 +58,7 @@ async def register_user(message: Message):
     else:
         msg = await bot.send_message(message.from_user.id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
         await bot.delete_message(message.from_user.id, msg['message_id'])
-        await bot.send_message(message.from_user.id, "❗️Щоб користуватися ботом потрібно підписатися на канал @ukraine_golovne", reply_markup=show_chanels())
+        await bot.send_message(message.from_user.id, ANSWER_TEXT, reply_markup=show_chanels())
 
 @dp.message_handler(Text(equals=["🗺Отримати карту повітряних тривог"]))
 @rate_limit(limit=10)
@@ -91,7 +91,7 @@ async def run(message: Message):
     else:
         msg = await bot.send_message(chat_id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
         await bot.delete_message(chat_id, msg['message_id'])
-        await bot.send_message(chat_id, "❗️Щоб користуватися ботом потрібно підписатися на канал @ukraine_golovne", reply_markup=show_chanels())
+        await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
 
 @dp.callback_query_handler(text='subchanneldone')
 async def channeldone(message: Message):
@@ -106,7 +106,7 @@ async def channeldone(message: Message):
             markup = menu
         await bot.send_message(chat_id=chat_id, text=f'Доступ разблоковано!', reply_markup=markup)
     else:
-        await bot.send_message(chat_id, "❗️Щоб користуватися ботом потрібно підписатися на канал @ukraine_golovne", reply_markup=show_chanels())
+        await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
 
 @dp.message_handler(commands=['set'])
 @dp.message_handler(Text(equals=["📢Увімкнути повідомлення про тривогу"]))
@@ -117,7 +117,7 @@ async def send_mail(message: Message):
     else:
         msg = await bot.send_message(chat_id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
         await bot.delete_message(chat_id, msg['message_id'])
-        await bot.send_message(message.from_user.id, "❗️Щоб користуватися ботом потрібно підписатися на канал @ukraine_golovne", reply_markup=show_chanels())
+        await bot.send_message(message.from_user.id, ANSWER_TEXT, reply_markup=show_chanels())
 
 @dp.callback_query_handler()
 async def save_user_region(call: CallbackQuery):
@@ -144,7 +144,7 @@ async def send_mail(message: Message):
     else:
         msg = await bot.send_message(message.from_user.id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
         await bot.delete_message(message.from_user.id, msg['message_id'])
-        await bot.send_message(message.from_user.id, "❗️Щоб користуватися ботом потрібно підписатися на канал @ukraine_golovne", reply_markup=show_chanels())
+        await bot.send_message(message.from_user.id, ANSWER_TEXT, reply_markup=show_chanels())
 
 
 @dp.message_handler(CommandHelp())
