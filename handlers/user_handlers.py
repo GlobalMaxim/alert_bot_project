@@ -1,5 +1,4 @@
 from datetime import datetime
-from turtle import update
 from aiogram.types import ParseMode, ChatJoinRequest
 from mailing.mailing import Mailing
 from telebot import dp, bot

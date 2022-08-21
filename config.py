@@ -9,3 +9,4 @@ MYSQL_DATABASE = "alert_bot_new"
 DATABASE_PASS = "qwerty1998"
 MYSQL_USER = "maxim"
 DATABASE_HOST = 'localhost'
+ANSWER_TEXT = '❗️Щоб користуватися ботом потрібно підписатися на канал:'

@@ -1,4 +1,4 @@
-≈config.py
+config.py
 __pycache__
 /log
 /log/*
@@ -7,3 +7,4 @@ screenshot.png
 venv
 docker
 imagePreparator.py
+mailing/mails.json
