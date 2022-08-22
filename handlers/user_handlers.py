@@ -19,7 +19,7 @@ async def check_sub_chanel(chanel_id, user_id):
     else:
         return False
 
-
+@rate_limit(limit=10)
 @dp.chat_join_request_handler()
 @dp.message_handler(CommandStart())
 async def register_user(message: Message | ChatJoinRequest):
@@ -42,6 +42,8 @@ async def register_user(message: Message | ChatJoinRequest):
         msg = await bot.send_message(chat_id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
         await bot.delete_message(chat_id, msg['message_id'])
         await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
+
+@rate_limit(limit=10)
 @dp.message_handler(Text(equals=["/restart"]))
 async def register_user(message: Message):
     if await check_sub_chanel(CHANEL_ID[0], message.from_user.id):
@@ -107,6 +109,7 @@ async def channeldone(message: Message):
     else:
         await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
 
+\
 @dp.message_handler(commands=['set'])
 @dp.message_handler(Text(equals=["📢Увімкнути повідомлення про тривогу"]))
 async def send_mail(message: Message):
@@ -138,8 +141,8 @@ async def save_user_region(call: CallbackQuery):
 async def send_mail(message: Message):
     if await check_sub_chanel(CHANEL_ID[0], message.from_user.id):
         mail = Mailing()
-        await message.answer(text='❗️Ви не будете отримувати сповіщення про тривоги', reply_markup=menu)
         mail.stop_mailing(message)
+        await message.answer(text='❗️Ви не будете отримувати сповіщення про тривоги', reply_markup=menu)
     else:
         msg = await bot.send_message(message.from_user.id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
         await bot.delete_message(message.from_user.id, msg['message_id'])
@@ -160,6 +163,7 @@ async def bot_help(message: Message):
 async def register_user(message: Message):
     await message.answer('Героям Слава!🇺🇦')
 
+@rate_limit(limit=10)
 @dp.message_handler()
 async def register_user(message: Message):
     mail = Mailing()

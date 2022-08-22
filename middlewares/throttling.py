@@ -60,7 +60,7 @@ class ThrottlingMiddleware(BaseMiddleware):
         delta = throttled.rate - throttled.delta
 
         # Prevent flooding
-        if throttled.exceeded_count <= 2:
+        if throttled.exceeded_count <= 3:
             await message.answer('Too many requests! Try again in 10 seconds! ')
 
         # Sleep.

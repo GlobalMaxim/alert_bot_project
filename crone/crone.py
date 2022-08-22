@@ -30,7 +30,8 @@ async def update_api_data():
     
 
 async def send_message_to_admin(bot):
-    await bot.send_message(admin_id, f'Сохранено {values[0]} новых пользователей и обновлено {values[1]} старых пользователя')
+    for admin in admin_id:
+        await bot.send_message(admin, f'Сохранено {values[0]} новых пользователей и обновлено {values[1]} старых пользователя')
 
 async def scheduler(bot):
     aioschedule.every().day.at('01:59').do(execute_script)
