@@ -74,7 +74,7 @@ async def count_mails(message: Message):
             markup = menu
         mail = Mailing()
         mail.clear_redis_statuses()
-        await message.answer(text=f'Редис очищен', reply_markup=markup))
+        await message.answer(text=f'Редис очищен', reply_markup=markup)
 
 @dp.message_handler(commands=['save'])
 async def save(message: Message):
@@ -88,7 +88,7 @@ async def save(message: Message):
         db = Database()
         values = db.save_data_to_db()
         db.close_connection()
-        await message.answer(f'Добавлено {values[0]} новых пользователей и обновлено {values[1]} пользователя', reply_markup=markup))
+        await message.answer(f'Добавлено {values[0]} новых пользователей и обновлено {values[1]} пользователя', reply_markup=markup)
 
 @dp.message_handler(commands=['parse'])
 async def save(message: Message):
@@ -100,7 +100,7 @@ async def save(message: Message):
         else:
             markup = menu
         await parse_photo()
-        await message.answer('Фото обновлено', reply_markup=markup))
+        await message.answer('Фото обновлено', reply_markup=markup)
 
 # @dp.message_handler(commands=['delete'])
 # async def reset(message: Message):
