@@ -10,8 +10,8 @@ services:
     environment: 
       - ALLOW_EMPTY_PASSWORD=Yes
     volumes:
-      - ./docker/redis:/usr/local/etc/redis/redis.conf
-      - ./docker/redis:/data
+      - './docker/redis:/usr/local/etc/redis/redis.conf'
+      - './docker/redis:/data'
     mem_limit: 65536m
   db:
     container_name: 'my-sql'
