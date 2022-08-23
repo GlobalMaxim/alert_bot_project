@@ -60,8 +60,8 @@ def api_parse_info():
     url = 'https://alerts.com.ua/api/states'
     req = requests.get(url, headers=headers)
     res = json.loads(req.text)
-    pattern = r'(.+)(:?\..+)'
-    last_update = re.search(pattern, res['last_update']).group(1)
+    # pattern = r'(.+)(:?\..+)'
+    # last_update = re.search(pattern, res['last_update']).group(1)
     for i in res["states"]:
             clear_date = datetime.fromisoformat(i['changed']).strftime("%H:%M %d-%m-%Y")
             i['changed'] = clear_date

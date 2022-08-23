@@ -163,7 +163,7 @@ async def bot_help(message: Message):
 async def register_user(message: Message):
     await message.answer('Героям Слава!🇺🇦')
 
-@rate_limit(limit=10)
+@rate_limit(limit=5)
 @dp.message_handler()
 async def register_user(message: Message):
     mail = Mailing()
