@@ -25,4 +25,4 @@ services:
         MYSQL_PASSWORD: qwerty1998
         MYSQL_USER: maxim
     volumes:
-      - ./docker/db:/var/lib/mysql
+      - './docker/db:/var/lib/mysql'
