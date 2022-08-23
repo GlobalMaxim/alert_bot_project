@@ -45,15 +45,18 @@ class Mailing():
                 for i in regions:
                     for key, values in list(users_from_redis.items()):
                         try:
-                            if i['name'] == values['user_region'] and values['is_sent_start_message'] == False and i['alert'] == True:
-                                # print(f'Need to send message to user {key}')
-                                await bot.send_message(int(key),f'🔴<b>Повітряна тривога у "{i["name"]}"</b>\nПочаток тривоги у {i["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
-                                values['is_sent_start_message'] = True
-                                values['is_sent_stop_message'] = False
-                            elif i['name'] == values['user_region'] and values['is_sent_start_message'] == True and values['is_sent_stop_message'] == False and i['alert'] == False:
-                                await bot.send_message(int(key), f'🟢<b>Відбій повітряної тривоги у "{i["name"]}"</b>\nОновлено у {i["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
-                                values['is_sent_stop_message'] = True
-                                values['is_sent_start_message'] = False
+                            if i['alert'] == True:
+                                if i['name'] == values['user_region'] and values['is_sent_start_message'] == False :
+                                    # print(f'Need to send message to user {key}')
+                                    await bot.send_message(int(key),f'🔴<b>Повітряна тривога у "{i["name"]}"</b>\nПочаток тривоги у {i["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
+                                    values['is_sent_start_message'] = True
+                            if i['alert'] == False:
+                                if i['name'] == values['user_region'] and values['is_sent_start_message'] == True and values['is_sent_stop_message'] == False :
+                                    await bot.send_message(int(key), f'🟢<b>Відбій повітряної тривоги у "{i["name"]}"</b>\nОновлено у {i["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
+                                    values['is_sent_stop_message'] = True
+                            
+                            values['is_sent_stop_message'] = False
+                            values['is_sent_start_message'] = False
                         except:
                             del users_from_redis[str(key)]
                             # users_from_redis.pop(str(key), None)
