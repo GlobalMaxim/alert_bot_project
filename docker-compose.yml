@@ -2,8 +2,8 @@ version: '3.6'
 services:
   redis:
     container_name: 'redis'
-    image: 'redis'
-    command: redis-server
+    image: 'redis:latest'
+    command: redis-server --loglevel warning
     restart: always
     ports: 
       - 6379:6379

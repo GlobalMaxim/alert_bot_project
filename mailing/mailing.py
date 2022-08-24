@@ -69,8 +69,7 @@ class Mailing():
                             values['is_sent_stop_message'] = False
                             values['is_sent_start_message'] = False
                             logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-                        finally:
-                            pass
+                        
                 redis_client.set('mail', json.dumps(users_from_redis))
             with open('mailing/mails.json', 'w') as f:
                 json.dump(users_from_redis, f, ensure_ascii=False)

@@ -120,7 +120,7 @@ async def channeldone(message: Message):
             await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
     except:
         logging.exception('\n'+'Callback subchaneldone log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-        pass
+        
 
 \
 @dp.message_handler(commands=['set'])
@@ -156,7 +156,7 @@ async def save_user_region(call: CallbackQuery):
         await call.answer()
     except:
         logging.exception('\n'+'Save User Region log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-        pass
+        
 
 @dp.message_handler(Text(equals=["❌Вимкнути сповіщення про тривогу"]))
 async def send_mail(message: Message):

@@ -31,7 +31,8 @@ async def send_to_admin(dp):
             BotCommand('show_all_data', 'Показать статистику'),
             BotCommand('parse', 'Обновить фото'),
             BotCommand('show_mails_count', 'Количество рассылок'),
-            BotCommand('save', 'Сохранить данные')
+            BotCommand('save', 'Сохранить данные'),
+            BotCommand('clear_mails_log', "Сбросить кеш")
         ], scope=BotCommandScopeChat(chat_id=admin), )
 
     await bot.send_message(admin_id[0], 'Бот запущен', reply_markup=menu)
@@ -74,7 +75,7 @@ async def count_mails(message: Message):
             markup = menu
         mail = Mailing()
         mail.clear_redis_statuses()
-        await message.answer(text=f'Редис очищен', reply_markup=markup)
+        await message.answer(text=f'Редис сброшен', reply_markup=markup)
 
 @dp.message_handler(commands=['save'])
 async def save(message: Message):
