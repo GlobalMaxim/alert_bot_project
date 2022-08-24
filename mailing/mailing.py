@@ -3,6 +3,7 @@ import logging
 import redis
 import json
 from test import  api_parse_info
+from aiogram.utils.exceptions import BotBlocked
 from aiogram.types import ParseMode
 """
 1. При сохраненении региона пользователем, он получает уведомление о тревоге по крону (каждые 30 сек проверка).
@@ -50,14 +51,14 @@ class Mailing():
                                     # print(f'Need to send message to user {key}')
                                     await bot.send_message(int(key),f'🔴<b>Повітряна тривога у "{i["name"]}"</b>\nПочаток тривоги у {i["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
                                     values['is_sent_start_message'] = True
+                                    values['is_sent_stop_message'] = False
                             if i['alert'] == False:
                                 if i['name'] == values['user_region'] and values['is_sent_start_message'] == True and values['is_sent_stop_message'] == False :
                                     await bot.send_message(int(key), f'🟢<b>Відбій повітряної тривоги у "{i["name"]}"</b>\nОновлено у {i["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
                                     values['is_sent_stop_message'] = True
-                            
-                            values['is_sent_stop_message'] = False
-                            values['is_sent_start_message'] = False
-                        except:
+                                    values['is_sent_start_message'] = False
+                                    
+                        except BotBlocked:
                             del users_from_redis[str(key)]
                             # users_from_redis.pop(str(key), None)
                             logging.exception('\n\n'+'Send mailing log! '  + '\n'+ f'User ID: {key}' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')

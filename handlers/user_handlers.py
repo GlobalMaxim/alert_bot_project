@@ -96,21 +96,25 @@ async def run(message: Message):
 
 @dp.callback_query_handler(text='subchanneldone')
 async def channeldone(message: Message):
-    chat_id = message.from_user.id
-    await bot.delete_message(chat_id, message.message.message_id)
-    if await check_sub_chanel(CHANEL_ID[0], chat_id):
-        mail = Mailing()
-        is_user_uses_alert = mail.is_user_alert_active(chat_id)
-        if is_user_uses_alert == True:
-            markup = menu_2
+    try:
+        chat_id = message.from_user.id
+        await bot.delete_message(chat_id, message.message.message_id)
+        if await check_sub_chanel(CHANEL_ID[0], chat_id):
+            mail = Mailing()
+            is_user_uses_alert = mail.is_user_alert_active(chat_id)
+            if is_user_uses_alert == True:
+                markup = menu_2
+            else:
+                markup = menu
+            await bot.send_message(chat_id=chat_id, text=f'Доступ разблоковано!', reply_markup=markup)
         else:
-            markup = menu
-        await bot.send_message(chat_id=chat_id, text=f'Доступ разблоковано!', reply_markup=markup)
-    else:
-        await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
+            await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
+    except:
+        pass
 
 \
 @dp.message_handler(commands=['set'])
+@rate_limit(limit=10)
 @dp.message_handler(Text(equals=["📢Увімкнути повідомлення про тривогу"]))
 async def send_mail(message: Message):
     chat_id = message.from_user.id
@@ -124,18 +128,21 @@ async def send_mail(message: Message):
 @dp.callback_query_handler()
 async def save_user_region(call: CallbackQuery):
     mail = Mailing()
-    if call.data == 'cancel':
-        await call.message.edit_reply_markup()
-        await call.message.delete()
-        await bot.send_message(chat_id=call.from_user.id, text= f'❗️Ви не обрали регіон')
-        
-        mail.stop_mailing(call)
-    else:
-        await call.message.edit_reply_markup()
-        await mail.save_user_mailing(call)
-        await bot.send_message(chat_id=call.from_user.id, text= f'✅Вітаю, ви будете отримумати сповіщення при повітряній тривозі у <b>"{call.data}"</b>', parse_mode=ParseMode.HTML, reply_markup=menu_2)
-        await mail.send_mailing(bot)
-    await call.answer()
+    try:
+        if call.data == 'cancel':
+            await call.message.edit_reply_markup()
+            await call.message.delete()
+            await bot.send_message(chat_id=call.from_user.id, text= f'❗️Ви не обрали регіон')
+            
+            mail.stop_mailing(call)
+        else:
+            await call.message.edit_reply_markup()
+            await mail.save_user_mailing(call)
+            await bot.send_message(chat_id=call.from_user.id, text= f'✅Вітаю, ви будете отримумати сповіщення при повітряній тривозі у <b>"{call.data}"</b>', parse_mode=ParseMode.HTML, reply_markup=menu_2)
+            await mail.send_mailing(bot)
+        await call.answer()
+    except:
+        pass
 
 @dp.message_handler(Text(equals=["❌Вимкнути сповіщення про тривогу"]))
 async def send_mail(message: Message):
