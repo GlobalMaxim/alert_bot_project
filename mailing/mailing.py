@@ -40,23 +40,23 @@ class Mailing():
 
     async def send_mailing(self, bot):
         regions = api_parse_info()
-        with redis.Redis() as redis_client:
+        with redis.Redis(retry_on_error=True) as redis_client:
             users_from_redis = json.loads(redis_client.get('mail'))
             if users_from_redis != None:
                 for i in regions:
                     for key, values in list(users_from_redis.items()):
                         try:
-                            if i['alert'] == True:
-                                if i['name'] == values['user_region'] and values['is_sent_start_message'] == False :
-                                    # print(f'Need to send message to user {key}')
-                                    await bot.send_message(int(key),f'🔴<b>Повітряна тривога у "{i["name"]}"</b>\nПочаток тривоги у {i["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
-                                    values['is_sent_start_message'] = True
-                                    values['is_sent_stop_message'] = False
-                            if i['alert'] == False:
-                                if i['name'] == values['user_region'] and values['is_sent_start_message'] == True and values['is_sent_stop_message'] == False :
-                                    await bot.send_message(int(key), f'🟢<b>Відбій повітряної тривоги у "{i["name"]}"</b>\nОновлено у {i["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
-                                    values['is_sent_stop_message'] = True
-                                    values['is_sent_start_message'] = False
+                            if i['name'] == values['user_region'] and values['is_sent_start_message'] == False and i['alert'] == True:
+                                values['is_sent_start_message'] = True
+                                values['is_sent_stop_message'] = False
+                                # print(f'Need to send message to user {key}')
+                                await bot.send_message(int(key),f'🔴<b>Повітряна тривога у "{i["name"]}"</b>\nПочаток тривоги у {i["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
+                            
+                            elif i['name'] == values['user_region'] and values['is_sent_start_message'] == True and values['is_sent_stop_message'] == False and i['alert'] == False:
+                                values['is_sent_stop_message'] = True
+                                values['is_sent_start_message'] = False
+                                await bot.send_message(int(key), f'🟢<b>Відбій повітряної тривоги у "{i["name"]}"</b>\nОновлено у {i["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
+                                    
                                     
                         except BotBlocked:
                             del users_from_redis[str(key)]
@@ -68,6 +68,8 @@ class Mailing():
                             values['is_sent_stop_message'] = False
                             values['is_sent_start_message'] = False
                             logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+                        finally:
+                            pass
                 redis_client.set('mail', json.dumps(users_from_redis))
             with open('mailing/mails.json', 'w') as f:
                 json.dump(users_from_redis, f, ensure_ascii=False)

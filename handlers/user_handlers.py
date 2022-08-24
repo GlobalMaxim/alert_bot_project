@@ -79,9 +79,9 @@ async def run(message: Message):
                 markup = menu_2
             else:
                 markup = menu
-            if chat_id not in admin_id:
-                notify_admin=f"Пользователь с ником @{message.from_user.username}, {message.from_user.first_name}, {message.from_user.id} воспользовался ботом"
-                await bot.send_message(admin_id[0], text=notify_admin, disable_notification=True)
+            # if chat_id not in admin_id:
+            #     notify_admin=f"Пользователь с ником @{message.from_user.username}, {message.from_user.first_name}, {message.from_user.id} воспользовался ботом"
+            #     await bot.send_message(admin_id[0], text=notify_admin, disable_notification=True)
             # await message.answer('Зачекайте...')
             r = Redis_Preparation()
             res = r.get_regions_from_redis()
