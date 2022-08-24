@@ -1,10 +1,8 @@
 config.py
 __pycache__
-/log
-/log/*
 /data
 screenshot.png
 venv
-docker
+docker/db
 imagePreparator.py
-mailing/mails.json
+log
