@@ -62,7 +62,8 @@ class Mailing():
                             del users_from_redis[str(key)]
                             # users_from_redis.pop(str(key), None)
                             logging.exception('\n\n'+'Send mailing log! '  + '\n'+ f'User ID: {key}' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-                            pass
+                        except:
+                            logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
                 redis_client.set('mail', json.dumps(users_from_redis))
             with open('mailing/mails.json', 'w') as f:
                 json.dump(users_from_redis, f, ensure_ascii=False)
