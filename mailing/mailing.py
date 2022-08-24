@@ -60,7 +60,6 @@ class Mailing():
                                     
                         except BotBlocked:
                             del users_from_redis[str(key)]
-                            # users_from_redis.pop(str(key), None)
                             logging.exception('\n\n'+'Send mailing log! '  + '\n'+ f'User ID: {key}' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
                         except:
                             logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
