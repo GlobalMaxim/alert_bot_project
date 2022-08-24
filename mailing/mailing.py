@@ -3,7 +3,7 @@ import logging
 import redis
 import json
 from test import  api_parse_info
-from aiogram.utils.exceptions import BotBlocked
+from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation
 from aiogram.types import ParseMode
 """
 1. При сохраненении региона пользователем, он получает уведомление о тревоге по крону (каждые 30 сек проверка).
@@ -61,7 +61,12 @@ class Mailing():
                         except BotBlocked:
                             del users_from_redis[str(key)]
                             logging.exception('\n\n'+'Send mailing log! '  + '\n'+ f'User ID: {key}' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+                        except CantInitiateConversation:
+                            del users_from_redis[str(key)]
+                            logging.exception('\n\n'+'Send mailing log! '  + '\n'+ f'User ID: {key}' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
                         except:
+                            values['is_sent_stop_message'] = False
+                            values['is_sent_start_message'] = False
                             logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
                 redis_client.set('mail', json.dumps(users_from_redis))
             with open('mailing/mails.json', 'w') as f:
