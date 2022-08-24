@@ -5,6 +5,7 @@ import json
 from test import  api_parse_info
 from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation
 from aiogram.types import ParseMode
+from aioredis.exceptions import ConnectionError
 """
 1. При сохраненении региона пользователем, он получает уведомление о тревоге по крону (каждые 30 сек проверка).
 Если тревога активна сейчас, пользователь получает уведомление, если у него is_sent_start_message = False
@@ -40,7 +41,7 @@ class Mailing():
 
     async def send_mailing(self, bot):
         regions = api_parse_info()
-        with redis.Redis(retry_on_error=True) as redis_client:
+        with redis.Redis(retry_on_error=[ConnectionError]) as redis_client:
             users_from_redis = json.loads(redis_client.get('mail'))
             if users_from_redis != None:
                 for i in regions:
