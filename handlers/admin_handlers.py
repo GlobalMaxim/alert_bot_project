@@ -32,7 +32,9 @@ async def send_to_admin(dp):
             BotCommand('parse', 'Обновить фото'),
             BotCommand('show_mails_count', 'Количество рассылок'),
             BotCommand('save', 'Сохранить данные'),
-            BotCommand('clear_mails_log', "Сбросить кеш")
+            BotCommand('clear_mails_log', "Сбросить кеш"),
+            BotCommand('convert_redis', "Перенести редис")
+
         ], scope=BotCommandScopeChat(chat_id=admin), )
 
     await bot.send_message(admin_id[0], 'Бот запущен', reply_markup=menu)
@@ -50,6 +52,13 @@ async def count_user(message: Message):
         count = db.count_users()
         db.close_connection()
         await message.answer(text=f'Всего {count} пользователей', reply_markup=markup)
+
+@dp.message_handler(commands=['convert_redis'])
+async def convert_redis(message: Message):
+    if message.from_user.id in admin_id:
+        mail = Mailing()
+        mail.reload_redis_instances()
+        await message.answer('Обновлено')
 
 @dp.message_handler(commands=['show_mails_count'])
 async def count_mails(message: Message):
