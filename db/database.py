@@ -9,9 +9,10 @@ import os
 from telegram_redis.redisPreparation import Redis_Preparation
 
 class Database():
+    logging.basicConfig(filename='log/database-log.txt', level=logging.WARNING)
     def __init__(self):
         self.connection = mysql.connector.connect(user=MYSQL_USER, password=DATABASE_PASS, port='43306', host=DATABASE_HOST, database=MYSQL_DATABASE)
-        logging.basicConfig(filename='log/database-log.txt', level=logging.DEBUG)
+        
 
     def get_user(self, user_id):
         try:
@@ -21,8 +22,8 @@ class Database():
             cursor.execute(query, atr)
             user_data = cursor.fetchall()
             return(user_data)
-        except Exception :
-                logging.exception('\n'+'Get User Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+        except :
+            logging.exception('\n'+'Get User Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         finally:
             cursor.close()
     """
@@ -64,8 +65,8 @@ class Database():
             cursor.execute(query)
             users_count = cursor.fetchall()
             return(users_count[0][0])
-        except Exception :
-                logging.exception('\n'+'Count All Users Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+        except:
+            logging.exception('\n'+'Count All Users Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         finally:
             if self.connection.is_connected():
                 cursor.close()
@@ -77,8 +78,8 @@ class Database():
             cursor.execute(query)
             count_requests = cursor.fetchall()
             return(count_requests[0][0])
-        except Exception :
-                logging.exception('\n'+'Count Requests Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+        except:
+            logging.exception('\n'+'Count Requests Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         finally:
             if self.connection.is_connected():
                 cursor.close()
@@ -101,8 +102,8 @@ class Database():
                 return str(count)
             else:
                 return str(0)
-        except Exception as ex :
-                logging.exception('\n'+'Add New Users Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+        except:
+            logging.exception('\n'+'Add New Users Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         finally:
             self.save_data_to_file(users, 'new_users')
             
@@ -124,9 +125,8 @@ class Database():
                 return str(count)
             else:
                 return str(0)
-        except Exception as ex :
-                print(str(ex))
-                logging.exception('\n'+'Add New Users Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+        except:
+            logging.exception('\n'+'Add New Users Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         finally:
             self.save_data_to_file(users, 'user_updates')
             
