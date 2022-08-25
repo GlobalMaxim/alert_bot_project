@@ -6,7 +6,6 @@ from test import  api_parse_info
 from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNotFound
 from aiogram.types import ParseMode
 from aioredis.exceptions import ConnectionError
-from itertools import izip_longest
 """
 1. При сохраненении региона пользователем, он получает уведомление о тревоге по крону (каждые 30 сек проверка).
 Если тревога активна сейчас, пользователь получает уведомление, если у него is_sent_start_message = False
@@ -46,9 +45,9 @@ class Mailing():
         except Exception as ex:
             logging.exception('\n'+'Save user mailing log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
-    def batcher(self, iterable, n):
-        args = [iter(iterable)] * n
-        return izip_longest(*args)
+    # def batcher(self, iterable, n):
+    #     args = [iter(iterable)] * n
+    #     return izip_longest(*args)
 
     async def send_mailing(self, bot):
         regions = api_parse_info()
