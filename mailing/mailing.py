@@ -117,7 +117,8 @@ class Mailing():
     def stop_mailing(self, callback):
         try:
             user_id = str(callback.from_user.id)
-            self.redis_client.delete(str(user_id))
+            del self.redis_client[user_id]
+            # self.redis_client.delete(str(user_id))
             # with redis.Redis() as redis_client:
             #     if redis_client.get('mail') != None:
             #         users_from_redis = json.loads(redis_client.get('mail'))
