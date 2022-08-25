@@ -64,7 +64,7 @@ class Mailing():
         start = datetime.now()
         # regions = api_parse_info()
         if len(regions) > 0:
-            for region in regions['regions']:
+            for region in regions:
                 if self.redis_client.dbsize() > 0:
                     redis_keys = []
                     for user in self.redis_client.scan_iter("*"):

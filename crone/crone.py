@@ -18,6 +18,8 @@ async def update_api_data():
     api_data = api_parse_info()
     r = Redis_Preparation()
     res = r.get_and_update_regions_from_redis(api_data)
+    mail = Mailing()
+    await mail.send_mailing(bot)
     if res['is_updated'] == True:
         mail = Mailing()
         await mail.send_mailing(bot)

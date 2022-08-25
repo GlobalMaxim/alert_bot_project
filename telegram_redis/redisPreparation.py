@@ -82,7 +82,7 @@ class Redis_Preparation():
                     # print('Default regions:')
                     print('Default:')
                     print(default)
-                    return default
+                    return default['regions']
                 else:
                     # print('Start not empty regions')
                     api_data = api_parse_info()
