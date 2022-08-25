@@ -4172,3 +4172,94 @@ Traceback (most recent call last):
   File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/utils/exceptions.py", line 140, in detect
     raise err(cls.text or description)
 aiogram.utils.exceptions.InvalidQueryID: Query is too old and response timeout expired or query id is invalid
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-7760' coro=<Dispatcher._process_polling_updates() done, defined at /home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py:407> exception=CantTalkWithBots("Forbidden: bot can't send messages to bots")>
+Traceback (most recent call last):
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 256, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/ubuntu/project/handlers/user_handlers.py", line 204, in register_user
+    await bot.send_message(chat_id=chat_id, text=f'{name}, спробуйте ще раз', reply_markup=markup)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/bot/bot.py", line 341, in send_message
+    result = await self.request(api.Methods.SEND_MESSAGE, payload)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/bot/base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/bot/api.py", line 121, in check_result
+    exceptions.Unauthorized.detect(description)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/utils/exceptions.py", line 140, in detect
+    raise err(cls.text or description)
+aiogram.utils.exceptions.CantTalkWithBots: Forbidden: bot can't send messages to bots
+ERROR:root:
+Get Alert Map log! 
+25-08-2022 10:45
+Traceback (most recent call last):
+  File "/home/ubuntu/project/handlers/user_handlers.py", line 90, in run
+    await message.answer('Тривоги працюють в наступних областях:')
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/types/message.py", line 397, in answer
+    return await self.bot.send_message(
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/bot/bot.py", line 341, in send_message
+    result = await self.request(api.Methods.SEND_MESSAGE, payload)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/bot/base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/bot/api.py", line 121, in check_result
+    exceptions.Unauthorized.detect(description)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/utils/exceptions.py", line 140, in detect
+    raise err(cls.text or description)
+aiogram.utils.exceptions.BotBlocked: Forbidden: bot was blocked by the user
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-7804' coro=<Dispatcher._process_polling_updates() done, defined at /home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py:407> exception=ConnectionError('Too many connections')>
+Traceback (most recent call last):
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/filters/builtin.py", line 554, in check
+    state = self.ctx_state.get()
+LookupError: <ContextVar name='user_state' at 0x7ff2848b3a60>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aioredis/connection.py", line 1409, in get_connection
+    connection = self._available_connections.pop()
+IndexError: pop from empty list
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/handler.py", line 116, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/dispatcher.py", line 256, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/handler.py", line 107, in notify
+    data.update(await check_filters(handler_obj.filters, args))
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/filters/filters.py", line 72, in check_filters
+    f = await execute_filter(filter_, args)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/filters/filters.py", line 56, in execute_filter
+    return await filter_.filter(*args, **filter_.kwargs)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/filters/filters.py", line 161, in __call__
+    return await self.check(*args)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/dispatcher/filters/builtin.py", line 559, in check
+    state = await self.dispatcher.storage.get_state(chat=chat, user=user)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/contrib/fsm_storage/redis.py", line 439, in get_state
+    return await redis.get(key) or self.resolve_state(default)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aiogram/contrib/fsm_storage/redis.py", line 265, in get
+    return await self._redis.get(name, **kwargs)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aioredis/client.py", line 1082, in execute_command
+    conn = self.connection or await pool.get_connection(command_name, **options)
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aioredis/connection.py", line 1411, in get_connection
+    connection = self.make_connection()
+  File "/home/ubuntu/project/venv/lib/python3.10/site-packages/aioredis/connection.py", line 1449, in make_connection
+    raise ConnectionError("Too many connections")
+aioredis.exceptions.ConnectionError: Too many connections
