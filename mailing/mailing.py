@@ -2,6 +2,7 @@ from datetime import datetime
 import logging
 import redis
 import json
+from telegram_redis.redisPreparation import Redis_Preparation
 from test import  api_parse_info
 from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNotFound
 from aiogram.types import ParseMode
@@ -21,6 +22,15 @@ class Mailing():
         self.redis_client = redis.StrictRedis(db=2)
         # self.mail_data = self.redis_client.get('mail')
 
+    async def check_is_active_user_region(self, bot, callback):
+        user_region = callback.data
+        user_id = callback.from_user.id
+        regions = Redis_Preparation().get_regions_from_redis()
+        # alert_regions = []
+        for region in regions['regions']:
+            if region['name'] == user_region:
+                await bot.send_message(user_id,f'🔴<b>Повітряна тривога у "{region["name"]}"</b>\nПочаток тривоги у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
+                break
 
     async def save_user_mailing(self, callback):
         try:
