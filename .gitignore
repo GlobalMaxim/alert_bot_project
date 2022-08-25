@@ -3,6 +3,7 @@ __pycache__
 /data
 screenshot.png
 venv
-docker/db
 imagePreparator.py
 log
+log/redis-log.txt
+docker/*
