@@ -22,11 +22,11 @@ async def update_api_data():
     await mail.send_mailing(bot)
     if res['is_updated'] == True:
         await parse_photo()
-        print('waiting for 20 sec sleep')
-        await asyncio.sleep(20)
-        print('start parsing 2')
-        await parse_photo()
-        print('updated in 20 sec')
+        # print('waiting for 20 sec sleep')
+        # await asyncio.sleep(20)
+        # print('start parsing 2')
+        # await parse_photo()
+        # print('updated in 20 sec')
     
 
 async def send_message_to_admin(bot):

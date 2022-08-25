@@ -76,17 +76,17 @@ class Mailing():
                         logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
                         
                 
-                try:
-                    with open('mailing/mails.json', 'r', encoding='utf-8') as f:
-                        data = json.loads(f)
-                        # print(data)
-                except:
-                    data = {}
-                if user not in data.keys():
-                    data[user] = user_data
-                # print(data)
-                with open('mailing/mails.json', 'w') as f:
-                        json.dump(data, f, ensure_ascii=False)
+                # try:
+                #     with open('mailing/mails.json', 'r', encoding='utf-8') as f:
+                #         data = json.loads(f)
+                #         # print(data)
+                # except:
+                #     data = {}
+                # if user not in data.keys():
+                #     data[user] = user_data
+                # # print(data)
+                # with open('mailing/mails.json', 'w') as f:
+                #         json.dump(data, f, ensure_ascii=False)
 
     def reload_redis_instances(self):
         old_client = redis.Redis()
@@ -117,10 +117,7 @@ class Mailing():
     def stop_mailing(self, callback):
         try:
             user_id = str(callback.from_user.id)
-            for user in self.redis_client.scan_iter("*"):
-                user = user.decode("utf-8")
-                if str(user_id) == user:
-                    self.redis_client.delete(user)
+            self.redis_client.delete(str(user_id))
             # with redis.Redis() as redis_client:
             #     if redis_client.get('mail') != None:
             #         users_from_redis = json.loads(redis_client.get('mail'))
@@ -131,13 +128,10 @@ class Mailing():
             logging.exception('\n'+'Stop mailing log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
     
     def is_user_alert_active(self, user_id):
-
-        for user in self.redis_client.scan_iter("*"):
-            user = user.decode("utf-8")
-            if user == str(user_id):
-                return True
-            else:
-                return False
+        if self.redis_client.exists(str(user_id)):
+            return True
+        else:
+            return False
 
         # with redis.Redis() as redis_client:
         #     if redis_client.get('mail') != None:

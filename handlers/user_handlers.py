@@ -146,14 +146,17 @@ async def save_user_region(call: CallbackQuery):
             await call.message.edit_reply_markup()
             await call.message.delete()
             await bot.send_message(chat_id=call.from_user.id, text= f'❗️Ви не обрали регіон')
-            
             mail.stop_mailing(call)
         else:
+            print('start selecting')
+            await bot.answer_callback_query(callback_query_id=call.id, text= f'{call.data}', cache_time=1)
             await call.message.edit_reply_markup()
             await mail.save_user_mailing(call)
             await bot.send_message(chat_id=call.from_user.id, text= f'✅Вітаю, ви будете отримумати сповіщення при повітряній тривозі у <b>"{call.data}"</b>', parse_mode=ParseMode.HTML, reply_markup=menu_2)
-            await mail.send_mailing(bot)
-        await call.answer()
+            # await mail.send_mailing(bot)
+            print('Selected')
+        # await call.answer()
+        # print('Answered')
     except:
         logging.exception('\n'+'Save User Region log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         
