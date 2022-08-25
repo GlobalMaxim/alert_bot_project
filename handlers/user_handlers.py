@@ -137,7 +137,7 @@ async def channeldone(message: Message):
 
 \
 @dp.message_handler(commands=['set'])
-@rate_limit(limit=10)
+@rate_limit(limit=5)
 @dp.message_handler(Text(equals=["📢Увімкнути повідомлення про тривогу"]))
 async def send_mail(message: Message):
     try:
@@ -166,7 +166,7 @@ async def save_user_region(call: CallbackQuery):
             await call.message.edit_reply_markup()
             await mail.save_user_mailing(call)
             await bot.send_message(chat_id=call.from_user.id, text= f'✅Вітаю, ви будете отримумати сповіщення при повітряній тривозі у <b>"{call.data}"</b>', parse_mode=ParseMode.HTML, reply_markup=menu_2)
-            # await mail.send_mailing(bot)
+            await mail.send_mailing(bot) 
             print('Selected')
         # await call.answer()
         # print('Answered')

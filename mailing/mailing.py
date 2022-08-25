@@ -48,7 +48,7 @@ class Mailing():
         regions = api_parse_info()
         for region in regions:
             if self.redis_client.dbsize() > 0:
-                for user in self.redis_client.scan_iter("*"):
+                for user in self.redis_client.keys("*"):
                     user_clear = user.decode("utf-8")
                     user_data = json.loads(self.redis_client.get(user_clear))
                     try:
@@ -100,7 +100,7 @@ class Mailing():
 
     def clear_redis_statuses(self):
         if self.redis_client.dbsize() > 0:
-            for user in self.redis_client.scan_iter("*"):
+            for user in self.redis_client.keys("*"):
                 user = user.decode("utf-8")
                 user_data = json.loads(self.redis_client.get(user))
                 user_data['is_sent_stop_message'] = False
