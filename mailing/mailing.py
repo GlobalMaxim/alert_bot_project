@@ -17,7 +17,8 @@ class Mailing():
     logging.basicConfig(level=logging.WARNING, filename='log/mailing-log.txt')
 
     def __init__(self):
-        self.redis_client = redis.Redis(db=2)
+        redis_pull = redis.ConnectionPool(db=4)
+        self.redis_client = redis.Redis(connection_pull=redis_pull, db=2, max_connections=2 * 31)
         # self.mail_data = self.redis_client.get('mail')
 
 
