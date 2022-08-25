@@ -71,16 +71,10 @@ async def restart_user(message: Message):
 @rate_limit(limit=10)
 async def run(message: Message):
     try:
-        if message.from_user.id == 389837052:
-            print('Start', str(datetime.now().strftime('%H:%M:%S')))
         chat_id = message.from_user.id
         if await check_sub_chanel(CHANEL_ID[0], chat_id):
-            if message.from_user.id == 389837052:
-                print('Check subscription', str(datetime.now().strftime('%H:%m:%S')))
             mail = Mailing()
             is_user_uses_alert = mail.is_user_alert_active(chat_id)
-            if message.from_user.id == 389837052:
-                print('Got mail data', str(datetime.now().strftime('%H:%M:%S')))
             if is_user_uses_alert == True:
                 markup = menu_2
             else:
@@ -91,8 +85,6 @@ async def run(message: Message):
             # await message.answer('Зачекайте...')
             r = Redis_Preparation()
             res = r.get_regions_from_redis()
-            if message.from_user.id == 389837052:
-                print('Got Regions',str(datetime.now().strftime('%H:%M:%S')))
             current_date = str(datetime.now().strftime('%H:%M %d-%m-%Y'))
             if len(res['regions']) > 0:
                 await message.answer('Тривоги працюють в наступних областях:')
@@ -100,15 +92,12 @@ async def run(message: Message):
                     await message.answer(f"🛑 <b>{i['name']}</b>\nПочаток тривоги у {i['changed']}\n@Official_alarm_bot", parse_mode=ParseMode.HTML)
                 # await message.answer('Зачекайте, завантажується фото...')
                 await message.answer_photo(photo=open('screenshot.png', 'rb'), caption=f"<b>❗️Карта повітряних тривог станом на {current_date}</b>\n\n@Official_alarm_bot", parse_mode=ParseMode.HTML, reply_markup=markup)
-                if message.from_user.id == 389837052:
-                    print('Data sent', str(datetime.now().strftime('%H:%M:%S')))
+           
                 # await message.answer(f"<b>❗️Карта повітряних тривог станом на {res['regions'][0]['last_update']}</b>\n\n@Official_alarm_bot", parse_mode=ParseMode.HTML, reply_markup=markup)
             else:
                 
                 await message.answer('Тривог зараз немає!')
             r.create_user_updates_to_redis(message)
-            if message.from_user.id == 389837052:
-                print('Redis updated', str(datetime.now().strftime('%H:%M:%S')))
         else:
             msg = await bot.send_message(chat_id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
             await bot.delete_message(chat_id, msg['message_id'])
@@ -161,13 +150,11 @@ async def save_user_region(call: CallbackQuery):
             await bot.send_message(chat_id=call.from_user.id, text= f'❗️Ви не обрали регіон')
             mail.stop_mailing(call)
         else:
-            print('start selecting')
             await bot.answer_callback_query(callback_query_id=call.id, text= f'{call.data}', cache_time=1)
             await call.message.edit_reply_markup()
             await mail.save_user_mailing(call)
             await bot.send_message(chat_id=call.from_user.id, text= f'✅Вітаю, ви будете отримумати сповіщення при повітряній тривозі у <b>"{call.data}"</b>', parse_mode=ParseMode.HTML, reply_markup=menu_2)
-            await mail.check_is_active_user_region(bot, call) 
-            print('Selected')
+            await mail.check_is_active_user_region(bot, call)
         # await call.answer()
         # print('Answered')
     except:

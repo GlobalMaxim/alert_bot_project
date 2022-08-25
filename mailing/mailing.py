@@ -62,8 +62,6 @@ class Mailing():
     async def send_mailing(self, bot):
         regions = Redis_Preparation().get_updated_regions()
         start = datetime.now()
-        print('Regions in mailing:')
-        print(regions)
         # regions = api_parse_info()
         if len(regions) > 0:
             for region in regions:
@@ -99,7 +97,7 @@ class Mailing():
                             # user_data['is_sent_start_message'] = False
                             logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         end = datetime.now()
-        print('Values queried in ' + str(end - start) + ' with scan_iter and mget.')
+        print('Mail sent with: ' + str(end - start))
 
     def reload_redis_instances(self):
         old_client = redis.Redis()

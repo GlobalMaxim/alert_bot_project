@@ -19,11 +19,9 @@ async def update_api_data():
     r = Redis_Preparation()
     res = r.get_and_update_regions_from_redis(api_data)
     if res['is_updated'] == True:
-        print('Start update mail data')
         mail = Mailing()
         await mail.send_mailing(bot)
         await parse_photo()
-        print('End updatind')
         # print('waiting for 20 sec sleep')
         # await asyncio.sleep(20)
         # print('start parsing 2')
