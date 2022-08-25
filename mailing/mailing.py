@@ -6,6 +6,7 @@ from test import  api_parse_info
 from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNotFound
 from aiogram.types import ParseMode
 from aioredis.exceptions import ConnectionError
+from itertools import izip_longest
 """
 1. При сохраненении региона пользователем, он получает уведомление о тревоге по крону (каждые 30 сек проверка).
 Если тревога активна сейчас, пользователь получает уведомление, если у него is_sent_start_message = False
@@ -18,7 +19,7 @@ class Mailing():
 
     def __init__(self):
         # redis_pool = redis.ConnectionPool(db=4)
-        self.redis_client = redis.Redis( db=2, max_connections=2 * 31)
+        self.redis_client = redis.StrictRedis(db=2)
         # self.mail_data = self.redis_client.get('mail')
 
 
@@ -45,14 +46,18 @@ class Mailing():
         except Exception as ex:
             logging.exception('\n'+'Save user mailing log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
+    def batcher(self, iterable, n):
+        args = [iter(iterable)] * n
+        return izip_longest(*args)
+
     async def send_mailing(self, bot):
         regions = api_parse_info()
         for region in regions:
             if self.redis_client.dbsize() > 0:
-                with redis.Redis(db=2) as redis_client:
-                    for user in redis_client.keys("*"):
+                for user in self.redis_client.keys("*"):
+                    # for user in self.redis_client.keys("*"):
                         user_clear = user.decode("utf-8")
-                        user_data = json.loads(redis_client.get(user_clear))
+                        user_data = json.loads(self.redis_client.get(user_clear))
                         try:
                             if region['name'] == user_data['user_region'] and user_data['is_sent_start_message'] == False and region['alert'] == True:
                                 await bot.send_message(int(user_clear),f'🔴<b>Повітряна тривога у "{region["name"]}"</b>\nПочаток тривоги у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
@@ -65,12 +70,12 @@ class Mailing():
                                 user_data['is_sent_stop_message'] = True
                                 user_data['is_sent_start_message'] = False
 
-                            redis_client.set(user_clear, json.dumps(user_data))
+                            self.redis_client.set(user_clear, json.dumps(user_data))
                         # except:
                         #     logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
                                     
                         except (BotBlocked, CantInitiateConversation, ChatNotFound):
-                            redis_client.delete(user_clear)
+                            self.redis_client.delete(user_clear)
                             logging.exception('\n\n'+'Send mailing log! '  + '\n'+ f'User ID: {user_clear}' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
                         except:
                             # user_data['is_sent_stop_message'] = False
