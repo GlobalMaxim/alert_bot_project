@@ -22,18 +22,18 @@ async def send_to_admin(dp):
     
     await bot.set_my_commands([
         BotCommand('restart', 'Перезапустити'),
-        BotCommand('set', 'Выбрать регион')
+        BotCommand('set', 'Обрати регіон')
     ])
 
     for admin in admin_id:
         await bot.set_my_commands([
-            BotCommand('set', 'Выбрать регион'),
-            BotCommand('show_all_data', 'Показать статистику'),
-            BotCommand('parse', 'Обновить фото'),
-            BotCommand('show_mails_count', 'Количество рассылок'),
-            BotCommand('save', 'Сохранить данные'),
-            BotCommand('clear_mails_log', "Сбросить кеш"),
-            BotCommand('convert_redis', "Перенести редис")
+            BotCommand('set', 'Обрати регіон'),
+            BotCommand('show_all_data', 'Показати статистику'),
+            BotCommand('parse', 'Оновити фото'),
+            # BotCommand('show_mails_count', 'Кількість активних розсилок'),
+            BotCommand('save', 'Зберегти данні у БД'),
+            BotCommand('clear_mails_log', "Зкинути кеш розсилок")
+            # BotCommand('convert_redis', "Перенести редис")
 
         ], scope=BotCommandScopeChat(chat_id=admin), )
 
@@ -51,7 +51,7 @@ async def count_user(message: Message):
         db = Database()
         count = db.count_users()
         db.close_connection()
-        await message.answer(text=f'Всего {count} пользователей', reply_markup=markup)
+        await message.answer(text=f'Всього {count} користувача', reply_markup=markup)
 
 @dp.message_handler(commands=['convert_redis'])
 async def convert_redis(message: Message):
@@ -69,9 +69,8 @@ async def count_mails(message: Message):
             markup = menu_2
         else:
             markup = menu
-        mail = Mailing()
         mails_count = mail.get_number_mails()
-        await message.answer(text=f'Всего {mails_count} рассылок', reply_markup=markup)
+        await message.answer(text=f'Всього {mails_count} розсилок', reply_markup=markup)
 
 @dp.message_handler(commands=['clear_mails_log'])
 async def count_mails(message: Message):
@@ -98,7 +97,7 @@ async def save(message: Message):
         db = Database()
         values = db.save_data_to_db()
         db.close_connection()
-        await message.answer(f'Добавлено {values[0]} новых пользователей и обновлено {values[1]} пользователя', reply_markup=markup)
+        await message.answer(f'Додано {values[0]} нових користувача та оновлено {values[1]} ', reply_markup=markup)
 
 @dp.message_handler(commands=['parse'])
 async def save(message: Message):
@@ -110,7 +109,7 @@ async def save(message: Message):
         else:
             markup = menu
         await parse_photo()
-        await message.answer('Фото обновлено', reply_markup=markup)
+        await message.answer('Фото оновлено', reply_markup=markup)
 
 # @dp.message_handler(commands=['delete'])
 # async def reset(message: Message):
@@ -132,18 +131,20 @@ async def show_all_info(message: Message):
             markup = menu
         r = Redis_Preparation()
         new_users =  r.get_count_new_users()
+        mails_count = mail.get_number_mails()
+        await message.answer(text=f'Всього {mails_count} активних розсилок')
         db = Database()
-        await message.answer(text=f'За сегодня {new_users} новых пользователей')
+        await message.answer(text=f'За сьогодні {new_users} нових користувача')
         updated_users = r.get_count_user_updates()
-        await message.answer(text=f'За сегодня {updated_users} новых запросов')
+        await message.answer(text=f'За сьогодні {updated_users} нових запитів')
         count = db.count_users()
         if not count:
             count = 0
-        await message.answer(text=f'Всего {count} пользователей')
+        await message.answer(text=f'Всього {count} користувача')
         count = db.count_requests()
         if not count:
             count = 0
-        await message.answer(text=f'Всего {count} Запросов', reply_markup=markup)
+        await message.answer(text=f'Всього {count} запитів', reply_markup=markup)
         db.close_connection()
 
 @dp.message_handler(commands=['show_all_requests_count'])
