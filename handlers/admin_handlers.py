@@ -31,8 +31,8 @@ async def send_to_admin(dp):
             BotCommand('show_all_data', 'Показати статистику'),
             BotCommand('parse', 'Оновити фото'),
             # BotCommand('show_mails_count', 'Кількість активних розсилок'),
-            BotCommand('save', 'Зберегти данні у БД'),
-            BotCommand('clear_mails_log', "Зкинути кеш розсилок")
+            BotCommand('save', 'Зберегти дані у БД'),
+            BotCommand('clear_mails_log', "Cкинути кеш розсилок")
             # BotCommand('convert_redis', "Перенести редис")
 
         ], scope=BotCommandScopeChat(chat_id=admin), )
@@ -154,3 +154,9 @@ async def count_user(message: Message):
         count = db.count_requests()
         await message.answer(text=f'Всего {count} Запросов')
         db.close_connection()
+
+@dp.message_handler(commands=['get_updated_regions'])
+async def count_user(message: Message):
+    if message.from_user.id in admin_id:
+        db = Redis_Preparation()
+        db.get_updated_regions()

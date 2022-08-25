@@ -60,51 +60,46 @@ class Mailing():
     #     return izip_longest(*args)
 
     async def send_mailing(self, bot):
-        regions = api_parse_info()
-        for region in regions:
-            if self.redis_client.dbsize() > 0:
-                users = []
-                for user in self.redis_client.scan_iter("*"):
-                    users.append(self.redis_client.get(user))
-                
-                for user in users:
-                    user_data = json.loads(user)
-                    try:
-                        if region['name'] == user_data['user_region'] and user_data['is_sent_start_message'] == False and region['alert'] == True:
-                            await bot.send_message(int(user_data['user_id']),f'🔴<b>Повітряна тривога у "{region["name"]}"</b>\nПочаток тривоги у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
-                            user_data['is_sent_start_message'] = True
-                            user_data['is_sent_stop_message'] = False
-                            # print(f'Need to send message to user {key}')
-                        
-                        elif region['name'] == user_data['user_region'] and user_data['is_sent_start_message'] == True and user_data['is_sent_stop_message'] == False and region['alert'] == False:
-                            await bot.send_message(int(user_data['user_id']), f'🟢<b>Відбій повітряної тривоги у "{region["name"]}"</b>\nОновлено у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
-                            user_data['is_sent_stop_message'] = True
-                            user_data['is_sent_start_message'] = False
+        regions = Redis_Preparation().get_updated_regions()
+        start = datetime.now()
+        print('Regions in mailing:')
+        print(regions)
+        # regions = api_parse_info()
+        if len(regions) > 0:
+            for region in regions:
+                if self.redis_client.dbsize() > 0:
+                    redis_keys = []
+                    for user in self.redis_client.scan_iter("*"):
+                        redis_keys.append(user)
+                    users = self.redis_client.mget(redis_keys)
+                    for user in users:
+                        user_data = json.loads(user)
+                        # print(user_data)
+                        try:
+                            if region['name'] == user_data['user_region'] and user_data['is_sent_start_message'] == False and region['alert'] == True:
+                                await bot.send_message(int(user_data['user_id']),f'🔴<b>Повітряна тривога у "{region["name"]}"</b>\nПочаток тривоги у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
+                                user_data['is_sent_start_message'] = True
+                                user_data['is_sent_stop_message'] = False
+                                # print(f'Need to send message to user {key}')
+                            
+                            elif region['name'] == user_data['user_region'] and user_data['is_sent_start_message'] == True and user_data['is_sent_stop_message'] == False and region['alert'] == False:
+                                await bot.send_message(int(user_data['user_id']), f'🟢<b>Відбій повітряної тривоги у "{region["name"]}"</b>\nОновлено у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
+                                user_data['is_sent_stop_message'] = True
+                                user_data['is_sent_start_message'] = False
 
-                        self.redis_client.set(int(user_data['user_id']), json.dumps(user_data))
-                    # except:
-                    #     logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-                                
-                    except (BotBlocked, CantInitiateConversation, ChatNotFound):
-                        self.redis_client.delete(int(user_data['user_id']))
-                        logging.exception('\n\n'+'Send mailing log! '   + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-                    except:
-                        # user_data['is_sent_stop_message'] = False
-                        # user_data['is_sent_start_message'] = False
-                        logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-                        
-                
-                # try:
-                #     with open('mailing/mails.json', 'r', encoding='utf-8') as f:
-                #         data = json.loads(f)
-                #         # print(data)
-                # except:
-                #     data = {}
-                # if user not in data.keys():
-                #     data[user] = user_data
-                # # print(data)
-                # with open('mailing/mails.json', 'w') as f:
-                #         json.dump(data, f, ensure_ascii=False)
+                            self.redis_client.set(int(user_data['user_id']), json.dumps(user_data))
+                        # except:
+                        #     logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+                                    
+                        except (BotBlocked, CantInitiateConversation, ChatNotFound):
+                            self.redis_client.delete(int(user_data['user_id']))
+                            logging.exception('\n\n'+'Send mailing log! '   + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+                        except:
+                            # user_data['is_sent_stop_message'] = False
+                            # user_data['is_sent_start_message'] = False
+                            logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+        end = datetime.now()
+        print('Values queried in ' + str(end - start) + ' with scan_iter and mget.')
 
     def reload_redis_instances(self):
         old_client = redis.Redis()

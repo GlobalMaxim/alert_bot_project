@@ -15,18 +15,13 @@ async def execute_script():
     values = db.save_data_to_db()
 
 async def update_api_data():
-    print('Start update data')
     api_data = api_parse_info()
     r = Redis_Preparation()
     res = r.get_and_update_regions_from_redis(api_data)
-    
-    
-    
     if res['is_updated'] == True:
         print('Start update mail data')
         mail = Mailing()
         await mail.send_mailing(bot)
-        print('Mail data updated')
         await parse_photo()
         print('End updatind')
         # print('waiting for 20 sec sleep')
