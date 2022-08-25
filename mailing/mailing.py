@@ -46,37 +46,36 @@ class Mailing():
 
     async def send_mailing(self, bot):
         regions = api_parse_info()
-        if self.redis_client.dbsize() > 0:
-            for user in self.redis_client.scan_iter("*"):
-                user = user.decode("utf-8")
-                user_data = json.loads(self.redis_client.get(user))
-                # users_from_redis = json.loads(self.mail_data)
-                # if users_from_redis != None:
-                for region in regions:
-                    # for key, values in list(users_from_redis.items()):
-                        try:
-                            if region['name'] == user_data['user_region'] and user_data['is_sent_start_message'] == False and region['alert'] == True:
-                                await bot.send_message(int(user),f'🔴<b>Повітряна тривога у "{region["name"]}"</b>\nПочаток тривоги у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
-                                user_data['is_sent_start_message'] = True
-                                user_data['is_sent_stop_message'] = False
-                                # print(f'Need to send message to user {key}')
-                            
-                            elif region['name'] == user_data['user_region'] and user_data['is_sent_start_message'] == True and user_data['is_sent_stop_message'] == False and region['alert'] == False:
-                                await bot.send_message(int(user), f'🟢<b>Відбій повітряної тривоги у "{region["name"]}"</b>\nОновлено у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
-                                user_data['is_sent_stop_message'] = True
-                                user_data['is_sent_start_message'] = False
-                        # except:
-                        #     logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-                                    
-                        except (BotBlocked, CantInitiateConversation, ChatNotFound):
-                            del self.redis_client.delete[user]
-                            logging.exception('\n\n'+'Send mailing log! '  + '\n'+ f'User ID: {user}' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-                        except:
+        for region in regions:
+            if self.redis_client.dbsize() > 0:
+                for user in self.redis_client.scan_iter("*"):
+                    user_clear = user.decode("utf-8")
+                    user_data = json.loads(self.redis_client.get(user_clear))
+                    try:
+                        if region['name'] == user_data['user_region'] and user_data['is_sent_start_message'] == False and region['alert'] == True:
+                            await bot.send_message(int(user_clear),f'🔴<b>Повітряна тривога у "{region["name"]}"</b>\nПочаток тривоги у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
+                            user_data['is_sent_start_message'] = True
                             user_data['is_sent_stop_message'] = False
-                            user_data['is_sent_start_message'] = False
-                            logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+                            # print(f'Need to send message to user {key}')
                         
-                self.redis_client.set(user, json.dumps(user_data))
+                        elif region['name'] == user_data['user_region'] and user_data['is_sent_start_message'] == True and user_data['is_sent_stop_message'] == False and region['alert'] == False:
+                            await bot.send_message(int(user_clear), f'🟢<b>Відбій повітряної тривоги у "{region["name"]}"</b>\nОновлено у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
+                            user_data['is_sent_stop_message'] = True
+                            user_data['is_sent_start_message'] = False
+
+                        self.redis_client.set(user_clear, json.dumps(user_data))
+                    # except:
+                    #     logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+                                
+                    except (BotBlocked, CantInitiateConversation, ChatNotFound):
+                        self.redis_client.delete(user_clear)
+                        logging.exception('\n\n'+'Send mailing log! '  + '\n'+ f'User ID: {user_clear}' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+                    except:
+                        # user_data['is_sent_stop_message'] = False
+                        # user_data['is_sent_start_message'] = False
+                        logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+                        
+                
                 try:
                     with open('mailing/mails.json', 'r', encoding='utf-8') as f:
                         data = json.loads(f)
