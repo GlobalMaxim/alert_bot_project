@@ -64,7 +64,7 @@ class Mailing():
         start = datetime.now()
         # regions = api_parse_info()
         if len(regions) > 0:
-            for region in regions:
+            for region in regions['regions']:
                 if self.redis_client.dbsize() > 0:
                     redis_keys = []
                     for user in self.redis_client.scan_iter("*"):
@@ -72,7 +72,6 @@ class Mailing():
                     users = self.redis_client.mget(redis_keys)
                     for user in users:
                         user_data = json.loads(user)
-                        # print(user_data)
                         try:
                             if region['name'] == user_data['user_region'] and user_data['is_sent_start_message'] == False and region['alert'] == True:
                                 await bot.send_message(int(user_data['user_id']),f'🔴<b>Повітряна тривога у "{region["name"]}"</b>\nПочаток тривоги у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
@@ -96,8 +95,8 @@ class Mailing():
                             # user_data['is_sent_stop_message'] = False
                             # user_data['is_sent_start_message'] = False
                             logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-        end = datetime.now()
-        print('Mail sent with: ' + str(end - start))
+            end = datetime.now()
+            print('Mail sent with: ' + str(end - start))
 
     def reload_redis_instances(self):
         old_client = redis.Redis()
