@@ -36,8 +36,8 @@ async def parse_photo():
         options.add_argument(f'--proxy-server={proxy}')
         webd = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         wd = Parser(webd)
-        wd.openPage('https://alerts.in.ua/')
-        wd.setLocalStorage('darkMode', 'true')
+        wd.openPage('https://map.ukrainealarm.com')
+        # wd.setLocalStorage('darkMode', 'true')
 
         webd.refresh()
         await asyncio.sleep(2)
