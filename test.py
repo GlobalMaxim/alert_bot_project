@@ -32,6 +32,8 @@ async def parse_photo():
         options.add_argument("--headless")
         options.add_argument("window-size=1920,1080")
         options.add_argument('log-level=3')
+        proxy = "185.173.26.47:41659"
+        options.add_argument(f'--proxy-server={proxy}')
         webd = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         wd = Parser(webd)
         wd.openPage('https://alerts.in.ua/')
