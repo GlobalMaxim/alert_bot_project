@@ -2,8 +2,8 @@ import asyncio
 from aiogram.types import ParseMode
 from typing import Union
 from telebot import dp, bot
-from aiogram.types import Message, BotCommand, BotCommandScopeChat, BotCommandScopeDefault,CallbackQuery
-from config import admin_id, OS
+from aiogram.types import Message, BotCommand, BotCommandScopeChat, BotCommandScopeDefault,CallbackQuery, BotCommandScopeChatMember
+from config import admin_id, OS, CHANEL_ID
 from keyboards.default.menu import menu, menu_2
 from aiogram.dispatcher.filters import Command, Text
 from db.database import Database
@@ -21,8 +21,7 @@ async def send_to_admin(dp):
     
     
     await bot.set_my_commands([
-        BotCommand('restart', 'Перезапустити'),
-        BotCommand('set', 'Обрати регіон')
+        BotCommand('region', 'Обрати регіон')
     ])
 
     for admin in admin_id:

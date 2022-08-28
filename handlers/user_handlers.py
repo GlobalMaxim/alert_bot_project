@@ -22,13 +22,39 @@ async def check_sub_chanel(chanel_id, user_id):
     else:
         return False
 
-@rate_limit(limit=10)
 @dp.chat_join_request_handler()
+async def start_user(message: Message | ChatJoinRequest):
+    try:
+        print('New invite user')
+        # if type(message) == ChatJoinRequest:
+        #     await message.approve()
+        chat_id = message.from_user.id
+        # if await check_sub_chanel(CHANEL_ID[0], chat_id):
+        r = Redis_Preparation()
+        r.create_new_user_to_redis(message)
+        
+        name = message.from_user.first_name
+        mail = Mailing()
+        is_user_uses_alert = mail.is_user_alert_active(message.from_user.id)
+        if is_user_uses_alert == True:
+            markup = menu_2
+        else:
+            markup = menu
+        await bot.send_message(chat_id=chat_id, text=f'✅ Привіт, {name}! Це офіційний бот, що інформує про повітряну тривогу в будь-якій області України.\n\n⚡️Командою /region обери свою область', reply_markup=markup)
+        # else:
+        #     msg = await bot.send_message(chat_id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
+        #     await bot.delete_message(chat_id, msg['message_id'])
+        #     await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
+    except:
+        logging.exception('\n'+'Start User log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+
+@rate_limit(limit=10)
+# @dp.chat_join_request_handler()
 @dp.message_handler(CommandStart())
 async def start_user(message: Message | ChatJoinRequest):
     try:
-        if type(message) == ChatJoinRequest:
-            await message.approve()
+        # if type(message) == ChatJoinRequest:
+        #     await message.approve()
         chat_id = message.from_user.id
         if await check_sub_chanel(CHANEL_ID[0], chat_id):
             r = Redis_Preparation()
@@ -41,7 +67,7 @@ async def start_user(message: Message | ChatJoinRequest):
                 markup = menu_2
             else:
                 markup = menu
-            await bot.send_message(chat_id=chat_id, text=f'✅ Привіт, {name}! Це офіційний бот, що інформує про повітряну тривогу в будь-якій області України.', reply_markup=markup)
+            await bot.send_message(chat_id=chat_id, text=f'✅ Привіт, {name}! Це офіційний бот, що інформує про повітряну тривогу в будь-якій області України.\n\n⚡️Командою /region обери свою область', reply_markup=markup)
         else:
             msg = await bot.send_message(chat_id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
             await bot.delete_message(chat_id, msg['message_id'])
@@ -49,23 +75,23 @@ async def start_user(message: Message | ChatJoinRequest):
     except:
         logging.exception('\n'+'Start User log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
-@rate_limit(limit=10)
-@dp.message_handler(Text(equals=["/restart"]))
-async def restart_user(message: Message):
-    if await check_sub_chanel(CHANEL_ID[0], message.from_user.id):
-        mail = Mailing()
-        is_user_uses_alert = mail.is_user_alert_active(message.from_user.id)
-        if is_user_uses_alert == True:
-            markup = menu_2
-        else:
-            markup = menu
-        chat_id = message.from_user.id
-        name = message.from_user.first_name
-        await bot.send_message(chat_id=chat_id, text=f'✅ Привіт, {name}! Це офіційний бот, що інформує про повітряну тривогу в будь-якій області України.', reply_markup=markup)
-    else:
-        msg = await bot.send_message(message.from_user.id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
-        await bot.delete_message(message.from_user.id, msg['message_id'])
-        await bot.send_message(message.from_user.id, ANSWER_TEXT, reply_markup=show_chanels())
+# @rate_limit(limit=10)
+# @dp.message_handler(Text(equals=["/restart"]))
+# async def restart_user(message: Message):
+#     if await check_sub_chanel(CHANEL_ID[0], message.from_user.id):
+#         mail = Mailing()
+#         is_user_uses_alert = mail.is_user_alert_active(message.from_user.id)
+#         if is_user_uses_alert == True:
+#             markup = menu_2
+#         else:
+#             markup = menu
+#         chat_id = message.from_user.id
+#         name = message.from_user.first_name
+#         await bot.send_message(chat_id=chat_id, text=f'✅ Привіт, {name}! Це офіційний бот, що інформує про повітряну тривогу в будь-якій області України.', reply_markup=markup)
+#     else:
+#         msg = await bot.send_message(message.from_user.id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
+#         await bot.delete_message(message.from_user.id, msg['message_id'])
+#         await bot.send_message(message.from_user.id, ANSWER_TEXT, reply_markup=show_chanels())
 
 @dp.message_handler(Text(equals=["🗺Отримати карту повітряних тривог"]))
 @rate_limit(limit=10)
@@ -125,7 +151,7 @@ async def channeldone(message: Message):
         
 
 \
-@dp.message_handler(commands=['set'])
+@dp.message_handler(commands=['region'])
 @rate_limit(limit=5)
 @dp.message_handler(Text(equals=["📢Увімкнути повідомлення про тривогу"]))
 async def send_mail(message: Message):
