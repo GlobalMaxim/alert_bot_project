@@ -88,7 +88,7 @@ class Database():
         try:
             r = Redis_Preparation()
             users = r.get_new_users_from_redis()
-            print(users)
+            # print(users)
             if users != None:
                 users_arr = []
                 for val in users:
