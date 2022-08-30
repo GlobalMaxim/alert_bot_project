@@ -93,7 +93,7 @@ class Database():
                 users_arr = []
                 for val in users:
                     values = json.loads(val)
-                    user_id = values['user_id']
+                    user_id = int(values['user_id'])
                     first_name = values['first_name']
                     last_name = values['last_name']
                     username = values['username']
@@ -112,7 +112,9 @@ class Database():
             else:
                 return str(0)
         except:
+
             logging.exception('\n'+'Add New Users Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+            raise
         # finally:
         #     self.save_data_to_file(users, 'new_users')
             
@@ -127,7 +129,7 @@ class Database():
                     values = json.loads(val)
                     count_exec_script = values['count_exec_script']
                     modified_at = values['modified_at']
-                    user_id = values['user_id']
+                    user_id = int(values['user_id'])
                     users_arr.append((count_exec_script, modified_at,user_id))
                 cursor = self.connection.cursor()
 
@@ -142,6 +144,7 @@ class Database():
                 return str(0)
         except:
             logging.exception('\n'+'Add New Users Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+            raise
         # finally:
         #     self.save_data_to_file(users, 'user_updates')
             
