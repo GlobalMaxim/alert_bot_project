@@ -243,58 +243,65 @@ class Redis_Preparation():
             logging.exception('\n'+'Create user updates error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         
     def get_new_users_from_redis(self):
-        with redis.Redis(db=1) as redis_client:
-            if redis_client.dbsize() > 0:
-                redis_keys = []
-                for user in redis_client.scan_iter("*"):
-                    redis_keys.append(user)
-                new_users = redis_client.mget(redis_keys)
-                return new_users
-            else:
-                return None
+        try:
+            with redis.Redis(db=1) as redis_client:
+                if redis_client.dbsize() > 0:
+                    redis_keys = []
+                    for user in redis_client.scan_iter("*"):
+                        redis_keys.append(user)
+                    new_users = redis_client.mget(redis_keys)
+                    return new_users
+                else:
+                    return None
+        except:
+            logging.exception('\n'+'Create user updates error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         # with redis.Redis(db=1) as redis_client:
         #     if (redis_client.get('users')) != None:
         #         users = json.loads(redis_client.get('users'))
         #         return users
     
     def get_new_updates_from_redis(self):
-        with redis.Redis(db=4) as redis_client:
-            if redis_client.dbsize() > 0:
-                redis_keys = []
-                for user in redis_client.scan_iter("*"):
-                    redis_keys.append(user)
-                user_updates = redis_client.mget(redis_keys)
-                return user_updates
-            else:
-                return None
+        try:
+            with redis.Redis(db=4) as redis_client:
+                if redis_client.dbsize() > 0:
+                    redis_keys = []
+                    for user in redis_client.scan_iter("*"):
+                        redis_keys.append(user)
+                    user_updates = redis_client.mget(redis_keys)
+                    return user_updates
+                else:
+                    return None
+        except:
+            logging.exception('\n'+'get_new_updates_from_redis error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
             # if (redis_client.get('updates')) != None:
             #     users = json.loads(redis_client.get('updates'))
             #     return users
 
     def get_count_new_users(self):
-        redis_client = redis.Redis(db=1)
-        return redis_client.dbsize()
-        users = self.get_new_users_from_redis()
-        if users is not None:
-            user_length = len(users)
-            return user_length
-        else:
-            return 0
+        try:
+            redis_client = redis.Redis(db=1)
+            return redis_client.dbsize()
+        except:
+            logging.exception('\n'+'get_count_new_users error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+        
     
     def get_count_user_updates(self):
-        with redis.Redis(db=4) as redis_client:
-            if redis_client.dbsize() > 0:
-                redis_keys = []
-                count = 0
-                for user in redis_client.scan_iter("*"):
-                    redis_keys.append(user)
-                user_updates = redis_client.mget(redis_keys)
-                for update in user_updates:
-                    update_data = json.loads(update)
-                    count += int(update_data['count_exec_script'])
-                return count
-            else:
-                return 0
+        try:
+            with redis.Redis(db=4) as redis_client:
+                if redis_client.dbsize() > 0:
+                    redis_keys = []
+                    count = 0
+                    for user in redis_client.scan_iter("*"):
+                        redis_keys.append(user)
+                    user_updates = redis_client.mget(redis_keys)
+                    for update in user_updates:
+                        update_data = json.loads(update)
+                        count += int(update_data['count_exec_script'])
+                    return count
+                else:
+                    return 0
+        except:
+            logging.exception('\n'+'get_count_user_updates error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         # users = self.get_new_updates_from_redis()
         # if users is not None:
         #     count = 0
