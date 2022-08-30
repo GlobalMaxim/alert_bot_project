@@ -8,34 +8,7 @@ from test import api_parse_info
 class Redis_Preparation():
 
     logging.basicConfig(level=logging.WARNING, filename='log/redis-log.txt')
-    """
-    def get_and_update_regions_from_redis(self, data):
-        try:
-            with redis.Redis() as redis_client:
-                reg_from_redis = redis_client.get('reg')
-                regs = {}
-                for i in data:
-                    if i['alert'] == True:
-                        name = i['name']
-                        # clear_date = datetime.fromisoformat(i['changed']).strftime("%H:%M %d-%m-%Y")
-                        regs[name] = i['changed']
-                # regs = data
-                result = {}
-                # Если данные из апи отличаются от данных из Redis или Redis пустой, то сохраняем данные с АПИ в редис
-                if reg_from_redis is None or json.loads(reg_from_redis) != regs:
-                    redis_client.set('reg', json.dumps(regs))
-                    result['regions'] = regs
-                    result['is_updated'] = True
-                    print('Regions updated')
-                # Иначе возвращаем данные с редиса
-                else:
-                    not_updated = json.loads(reg_from_redis)
-                    result['regions'] = not_updated
-                    result['is_updated'] = False
-                return result
-        except Exception as ex:
-            logging.exception('\n'+'Get and update regions from redis error! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-    """ 
+    
     def get_and_update_regions_from_redis(self, data):
         try:
             with redis.Redis(host="127.0.0.1", port=6379) as redis_client:
