@@ -88,13 +88,22 @@ class Database():
         try:
             r = Redis_Preparation()
             users = r.get_new_users_from_redis()
-
+            print(users)
             if users != None:
                 users_arr = []
-                for key, values in users.items():
-                    users_arr.append((values['user_id'], values['first_name'], values['last_name'], values['username'], values['language_code'], values['count_exec_script'], values['created_at'], values['modified_at']))
+                for val in users:
+                    values = json.loads(val)
+                    user_id = values['user_id']
+                    first_name = values['first_name']
+                    last_name = values['last_name']
+                    username = values['username']
+                    language_code = values['language_code']
+                    count_exec_script = values['count_exec_script']
+                    created_at = values['created_at']
+                    modified_at = values['modified_at']
+                    users_arr.append((user_id, first_name, last_name, username, language_code, count_exec_script, created_at, modified_at))
                 cursor = self.connection.cursor()
-                query = 'INSERT IGNORE INTO users (user_id, first_name, last_name, username, language_code, count_exec_script, created_at, modified_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)'
+                query = 'INSERT INTO users (user_id, first_name, last_name, username, language_code, count_exec_script, created_at, modified_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE user_id = user_id;'
                 cursor.executemany(query, users_arr)
                 self.connection.commit()
                 count = cursor.rowcount
@@ -104,8 +113,8 @@ class Database():
                 return str(0)
         except:
             logging.exception('\n'+'Add New Users Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-        finally:
-            self.save_data_to_file(users, 'new_users')
+        # finally:
+        #     self.save_data_to_file(users, 'new_users')
             
 
     def add_user_updates_from_redis_to_db(self):
@@ -114,10 +123,16 @@ class Database():
             users = r.get_new_updates_from_redis()
             if users is not None:
                 users_arr = []
-                for key, values in users.items():
-                    users_arr.append((values['count_exec_script'], values['modified_at'],values['user_id']))
+                for val in users:
+                    values = json.loads(val)
+                    count_exec_script = values['count_exec_script']
+                    modified_at = values['modified_at']
+                    user_id = values['user_id']
+                    users_arr.append((count_exec_script, modified_at,user_id))
                 cursor = self.connection.cursor()
-                query = 'UPDATE users set count_exec_script = count_exec_script + %s, modified_at = %s where user_id = %s'
+
+                query = "INSERT INTO users (count_exec_script, modified_at, user_id) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE count_exec_script = count_exec_script + VALUES(count_exec_script), modified_at = VALUES(modified_at);"
+                # query = 'UPDATE users set count_exec_script = count_exec_script + %s, modified_at = %s where user_id = %s'
                 cursor.executemany(query, users_arr)
                 self.connection.commit()
                 count = cursor.rowcount
@@ -127,24 +142,27 @@ class Database():
                 return str(0)
         except:
             logging.exception('\n'+'Add New Users Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-        finally:
-            self.save_data_to_file(users, 'user_updates')
+        # finally:
+        #     self.save_data_to_file(users, 'user_updates')
             
     
     def close_connection(self):
         self.connection.close()
 
     def save_data_to_db(self):
-        new_users =  self.add_new_users_from_redis_to_db()
-        print(f'Saved {new_users} new users')
-        updated_users =  self.add_user_updates_from_redis_to_db()
-        print(f'Saved {updated_users} user updates')
-        r = redis.Redis(db=1)
-        r.delete('updates')
-        r.delete('users')
-        print('Cache deleted')
-        return [new_users, updated_users]
-
+        try:
+            new_users =  self.add_new_users_from_redis_to_db()
+            print(f'Saved {new_users} new users')
+            updated_users =  self.add_user_updates_from_redis_to_db()
+            print(f'Saved {updated_users} user updates')
+            client_users = redis.Redis(db=1)
+            client_user_updates = redis.Redis(db=4)
+            client_users.flushdb()
+            client_user_updates.flushdb()
+            print('Cache deleted')
+            return [new_users, updated_users]
+        except:
+            logging.exception('\n'+'Save data to db exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
     
     def clear_redis(self):
         r = redis.Redis(db=1)

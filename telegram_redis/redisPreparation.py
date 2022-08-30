@@ -80,8 +80,7 @@ class Redis_Preparation():
                     #     if region['name'] == 'Луганська область':
                     #         regs.remove(region)
                     # print('Default regions:')
-                    print('Default:')
-                    print(default)
+                    # print('Default:')
                     return default['regions']
                 else:
                     # print('Start not empty regions')
@@ -139,6 +138,51 @@ class Redis_Preparation():
                 return active_regions
         except Exception as ex:
             logging.exception('\n'+'Get regions from redis error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+    """
+    ШАГ №1 
+    Берем Апдейты пользователей и добавляем их в JSON файл users
+    """
+    def replace_redis_new_users_to_new_redis_db(self):
+        with redis.Redis(db=1) as client:
+            user_updates_from_redis = json.loads(client.get('updates'))
+            new_users_from_redis = json.loads(client.get('users'))
+            count = 0
+            for key, value in user_updates_from_redis.items():
+                data = {
+                    'user_id': value['user_id'], 
+                    'first_name': '', 
+                    'last_name': '', 
+                    'username': '', 
+                    'language_code': 'ru', 
+                    'count_exec_script': 0,
+                    'created_at':str(datetime.now().strftime("%d-%m-%Y %H:%M")), 
+                    'modified_at': value['modified_at']
+                }
+                if key not in new_users_from_redis.keys():
+                    new_users_from_redis[key] = data
+                    count +=1
+
+            return str(count)
+    """
+    ШАГ №2 Переносим данные из JSON формата в ключ - значение базы редис 
+    !!! Нужно потом удалить ключ users
+    """
+    def replace_new_users_redis_db(self):
+        with redis.Redis(db=1) as redis_client:
+            user_mails = json.loads(redis_client.get('users'))
+            for key, value in user_mails.items():
+                redis_client.set(key, json.dumps(value))
+    """
+    ШАГ №4 Меням расположение апдейтов на db=4 и делаем их ключ-значение 
+    """
+    def replace_user_updates_location(self):
+        client = redis.Redis(db=1)
+        new_db = redis.Redis(db=4)
+        user_mails = json.loads(client.get('updates'))
+        for key, value in user_mails:
+            new_db.set(str(key), json.dumps(value))
+
+            
 
     def create_new_user_to_redis(self,message):
         try:
@@ -159,58 +203,77 @@ class Redis_Preparation():
                     'modified_at': str(datetime.now().strftime("%d-%m-%Y %H:%M"))
                 }
 
-                if redis_client.get('users') is None:
-                    data = {}
-                    data[user_id] = user_data
-                    redis_client.set('users', json.dumps(data))
-                else:
-                    users_from_redis = json.loads(redis_client.get('users'))
-                    if str(user_id) not in users_from_redis.keys():
-                        users_from_redis[user_id] = user_data
-                        redis_client.set('users', json.dumps(users_from_redis))
+                if redis_client.get(str(user_id)) is None:
+                    # data = {}
+                    # data[user_id] = user_data
+                    redis_client.set(str(user_id), json.dumps(user_data))
+                # else:
+                #     users_from_redis = json.loads(redis_client.get('users'))
+                #     if str(user_id) not in users_from_redis.keys():
+                #         users_from_redis[user_id] = user_data
+                #         redis_client.set('users', json.dumps(users_from_redis))
 
         except:
             logging.exception('\n'+'Create new user error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
     
     def create_user_updates_to_redis(self, message):
         try:
-            with redis.Redis(db=1) as redis_client:
+            with redis.Redis(db=4) as redis_client:
                 user_id = message.from_user.id
                 user_data = {
                     'user_id':user_id,
                     'count_exec_script': 1, 
                     'modified_at': str(datetime.now().strftime("%d-%m-%Y %H:%M"))
                 }
-                if redis_client.get('updates') is None:
-                    data = {}
-                    data[user_id] = user_data
-                    redis_client.set('updates', json.dumps(data))
-                else:
-                    updates_from_redis = json.loads(redis_client.get('updates'))
+                user_from_redis = redis_client.get(str(user_id))
+                if user_from_redis is None:
+                    # data = {}
+                    # data[user_id] = user_data
+                    redis_client.set(user_id, json.dumps(user_data))
+                elif user_from_redis is not None:
+                    user_update_redis = json.loads(user_from_redis)
                     
-                    if str(user_id) in updates_from_redis.keys():
-                        updates_from_redis[str(user_id)]['count_exec_script'] += 1
-                        updates_from_redis[str(user_id)]['modified_at'] = str(datetime.now().strftime("%d-%m-%Y %H:%M"))
-                        redis_client.set('updates', json.dumps(updates_from_redis))
-                    else:
-                        updates_from_redis[user_id] = user_data
-                        redis_client.set('updates', json.dumps(updates_from_redis))
+                    user_update_redis['count_exec_script'] += 1
+                    user_update_redis['modified_at'] = str(datetime.now().strftime("%d-%m-%Y %H:%M"))
+                    redis_client.set(str(user_id), json.dumps(user_update_redis))
+                    # else:
+                    #     updates_from_redis[user_id] = user_data
+                    #     redis_client.set('updates', json.dumps(updates_from_redis))
         except:
             logging.exception('\n'+'Create user updates error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         
     def get_new_users_from_redis(self):
         with redis.Redis(db=1) as redis_client:
-            if (redis_client.get('users')) != None:
-                users = json.loads(redis_client.get('users'))
-                return users
+            if redis_client.dbsize() > 0:
+                redis_keys = []
+                for user in redis_client.scan_iter("*"):
+                    redis_keys.append(user)
+                new_users = redis_client.mget(redis_keys)
+                return new_users
+            else:
+                return None
+        # with redis.Redis(db=1) as redis_client:
+        #     if (redis_client.get('users')) != None:
+        #         users = json.loads(redis_client.get('users'))
+        #         return users
     
     def get_new_updates_from_redis(self):
-        with redis.Redis(db=1) as redis_client:
-            if (redis_client.get('updates')) != None:
-                users = json.loads(redis_client.get('updates'))
-                return users
+        with redis.Redis(db=4) as redis_client:
+            if redis_client.dbsize() > 0:
+                redis_keys = []
+                for user in redis_client.scan_iter("*"):
+                    redis_keys.append(user)
+                user_updates = redis_client.mget(redis_keys)
+                return user_updates
+            else:
+                return None
+            # if (redis_client.get('updates')) != None:
+            #     users = json.loads(redis_client.get('updates'))
+            #     return users
 
     def get_count_new_users(self):
+        redis_client = redis.Redis(db=1)
+        return redis_client.dbsize()
         users = self.get_new_users_from_redis()
         if users is not None:
             user_length = len(users)
@@ -219,11 +282,24 @@ class Redis_Preparation():
             return 0
     
     def get_count_user_updates(self):
-        users = self.get_new_updates_from_redis()
-        if users is not None:
-            count = 0
-            for key, values in users.items():
-                count += int(values['count_exec_script'])
-            return count
-        else:
-            return 0
+        with redis.Redis(db=4) as redis_client:
+            if redis_client.dbsize() > 0:
+                redis_keys = []
+                count = 0
+                for user in redis_client.scan_iter("*"):
+                    redis_keys.append(user)
+                user_updates = redis_client.mget(redis_keys)
+                for update in user_updates:
+                    update_data = json.loads(update)
+                    count += int(update_data['count_exec_script'])
+                return count
+            else:
+                return 0
+        # users = self.get_new_updates_from_redis()
+        # if users is not None:
+        #     count = 0
+        #     for key, values in users.items():
+        #         count += int(values['count_exec_script'])
+        #     return count
+        # else:
+        #     return 0

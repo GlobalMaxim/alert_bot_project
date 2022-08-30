@@ -52,12 +52,21 @@ async def count_user(message: Message):
         db.close_connection()
         await message.answer(text=f'Всього {count} користувача', reply_markup=markup)
 
-@dp.message_handler(commands=['convert_redis'])
+# @dp.message_handler(commands=['convert_redis'])
 async def convert_redis(message: Message):
     if message.from_user.id in admin_id:
         mail = Mailing()
         mail.reload_redis_instances()
         await message.answer('Обновлено')
+
+@dp.message_handler(commands=['convert_redis'])
+async def users_redis_update(message: Message):
+    if message.from_user.id in admin_id:
+        redis = Redis_Preparation()
+        count = redis.replace_redis_new_users_to_new_redis_db()
+        await message.answer(f'Обновлено {count}')
+        redis.replace_new_users_redis_db()
+        await message.answer(f'finished')
 
 @dp.message_handler(commands=['show_mails_count'])
 async def count_mails(message: Message):

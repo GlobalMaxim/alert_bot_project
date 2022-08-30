@@ -75,24 +75,6 @@ async def start_user(message: Message | ChatJoinRequest):
     except:
         logging.exception('\n'+'Start User log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
-# @rate_limit(limit=10)
-# @dp.message_handler(Text(equals=["/restart"]))
-# async def restart_user(message: Message):
-#     if await check_sub_chanel(CHANEL_ID[0], message.from_user.id):
-#         mail = Mailing()
-#         is_user_uses_alert = mail.is_user_alert_active(message.from_user.id)
-#         if is_user_uses_alert == True:
-#             markup = menu_2
-#         else:
-#             markup = menu
-#         chat_id = message.from_user.id
-#         name = message.from_user.first_name
-#         await bot.send_message(chat_id=chat_id, text=f'✅ Привіт, {name}! Це офіційний бот, що інформує про повітряну тривогу в будь-якій області України.', reply_markup=markup)
-#     else:
-#         msg = await bot.send_message(message.from_user.id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
-#         await bot.delete_message(message.from_user.id, msg['message_id'])
-#         await bot.send_message(message.from_user.id, ANSWER_TEXT, reply_markup=show_chanels())
-
 @dp.message_handler(Text(equals=["🗺Отримати карту повітряних тривог"]))
 @rate_limit(limit=10)
 async def run(message: Message):
