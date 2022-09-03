@@ -18,9 +18,9 @@ def get_users_from_db():
 
 async def send_message_to_users(message, bot):
     logging.basicConfig(level=logging.WARNING, filename='log/private-message-log.txt')
-    # users = get_users_from_db()
+    users = get_users_from_db()
 
-    users = [389837052, 2121074781, 2147483647, 2133124028]
+    # users = [389837052, 2121074781, 2147483647, 2133124028]
     with redis.Redis(db=5) as client:
         for user in users:
             try:
