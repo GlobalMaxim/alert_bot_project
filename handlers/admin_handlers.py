@@ -12,6 +12,7 @@ from crone.crone import scheduler
 from keyboards.mailing.regionsMarkup import regions_markup
 from mailing.mailing import Mailing
 from test import  parse_photo, api_parse_info
+from mailing.send_private_mailing import send_message_to_users
 
 
 async def send_to_admin(dp):
@@ -25,16 +26,21 @@ async def send_to_admin(dp):
     ])
 
     for admin in admin_id:
-        await bot.set_my_commands([
-            BotCommand('set', 'Обрати регіон'),
-            BotCommand('show_all_data', 'Показати статистику'),
-            BotCommand('parse', 'Оновити фото'),
-            # BotCommand('show_mails_count', 'Кількість активних розсилок'),
-            BotCommand('save', 'Зберегти дані у БД'),
-            BotCommand('clear_mails_log', "Cкинути кеш розсилок")
-            # BotCommand('convert_redis', "Перенести редис")
+        try:
+            await bot.set_my_commands([
+                BotCommand('set', 'Обрати регіон'),
+                BotCommand('show_all_data', 'Показати статистику'),
+                BotCommand('parse', 'Оновити фото'),
+                # BotCommand('show_mails_count', 'Кількість активних розсилок'),
+                BotCommand('save', 'Зберегти дані у БД'),
+                BotCommand('clear_mails_log', "Cкинути кеш розсилок"),
+                # BotCommand('post', "Надіслати пповідомлення користувачу"),
 
-        ], scope=BotCommandScopeChat(chat_id=admin), )
+                # BotCommand('convert_redis', "Перенести редис")
+
+            ], scope=BotCommandScopeChat(chat_id=admin), )
+        except:
+            pass
 
     await bot.send_message(admin_id[0], 'Бот запущен', reply_markup=menu)
 
@@ -106,6 +112,12 @@ async def save(message: Message):
         values = db.save_data_to_db()
         db.close_connection()
         await message.answer(f'Додано {values[0]} нових користувача та оновлено {values[1]} ', reply_markup=markup)
+
+@dp.message_handler(commands=['post'])
+async def send_private_message(message: Message):
+    if message.from_user.id in admin_id:
+        msg = message.text[message.text.find(' '):]
+        await send_message_to_users(msg, bot)
 
 @dp.message_handler(commands=['parse'])
 async def save(message: Message):

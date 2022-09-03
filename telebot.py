@@ -5,7 +5,7 @@ from config import TOKEN
 
 storage = RedisStorage2(db=3,pool_size=10)
 
-bot = Bot(TOKEN, parse_mode='HTML')
+bot = Bot(TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
 async def on_shutdown(dp):
