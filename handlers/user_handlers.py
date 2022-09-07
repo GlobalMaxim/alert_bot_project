@@ -56,10 +56,10 @@ async def start_user(message: Message | ChatJoinRequest):
         # if type(message) == ChatJoinRequest:
         #     await message.approve()
         chat_id = message.from_user.id
-        if await check_sub_chanel(CHANEL_ID[0], chat_id):
-            r = Redis_Preparation()
-            r.create_new_user_to_redis(message)
+        r = Redis_Preparation()
+        r.create_new_user_to_redis(message)
             
+        if await check_sub_chanel(CHANEL_ID[0], chat_id):
             name = message.from_user.first_name
             mail = Mailing()
             is_user_uses_alert = mail.is_user_alert_active(message.from_user.id)

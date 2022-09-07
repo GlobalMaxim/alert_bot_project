@@ -90,7 +90,7 @@ class Mailing():
                                     
                         except (BotBlocked, CantInitiateConversation, ChatNotFound):
                             self.redis_client.delete(int(user_data['user_id']))
-                            logging.exception('\n\n'+'Send mailing log! '   + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+                            # logging.exception('\n\n'+'Send mailing log! '   + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
                         except:
                             # user_data['is_sent_stop_message'] = False
                             # user_data['is_sent_start_message'] = False
