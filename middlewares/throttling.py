@@ -60,8 +60,8 @@ class ThrottlingMiddleware(BaseMiddleware):
         delta = throttled.rate - throttled.delta
 
         # Prevent flooding
-        if throttled.exceeded_count <= 3:
-            await message.answer('Too many requests! Try again in 10 seconds! ')
+        if throttled.exceeded_count > 2:
+            await message.answer(f'Too many requests! Try again in {delta} seconds! ')
 
         # Sleep.
         await asyncio.sleep(delta)
