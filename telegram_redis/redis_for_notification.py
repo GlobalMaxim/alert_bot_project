@@ -9,7 +9,7 @@ def get_updated_regions():
     try:
         regionsRedis = Redis_Preparation()
 
-        with redis.Redis(db=5) as redis_client:
+        with redis.Redis(db=6) as redis_client:
             try:
                 regions_from_redis = json.loads(redis_client.get('updated_regs'))
             except:
