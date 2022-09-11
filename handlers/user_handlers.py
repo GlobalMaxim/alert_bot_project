@@ -25,7 +25,7 @@ async def check_sub_chanel(chanel_id, user_id):
 @dp.chat_join_request_handler()
 async def start_user(message: Message | ChatJoinRequest):
     try:
-        print('New invite user')
+        # print('New invite user')
         # if type(message) == ChatJoinRequest:
         #     await message.approve()
         chat_id = message.from_user.id
