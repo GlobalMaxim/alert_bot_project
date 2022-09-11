@@ -38,7 +38,7 @@ async def parse_photo():
         wd.setLocalStorage('darkMode', 'true')
 
         webd.refresh()
-        await asyncio.sleep(2)
+        await asyncio.sleep(4)
         # await wd.wait('//div[@id="map"]/*[name()="svg"]/*[name()="g"]//*[@id="a"]')
         # await asyncio.sleep(1)
         wd.getImage('screenshot.png')

@@ -4,7 +4,7 @@ import redis
 import json
 from telegram_redis.redisPreparation import Redis_Preparation
 from test import  api_parse_info
-from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNotFound
+from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNotFound, UserDeactivated
 from aiogram.types import ParseMode
 from aioredis.exceptions import ConnectionError
 """
@@ -88,7 +88,7 @@ class Mailing():
                         # except:
                         #     logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
                                     
-                        except (BotBlocked, CantInitiateConversation, ChatNotFound):
+                        except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated):
                             self.redis_client.delete(int(user_data['user_id']))
                             # logging.exception('\n\n'+'Send mailing log! '   + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
                         except:
