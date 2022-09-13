@@ -3,9 +3,9 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ChatJoinRequest
 
 from crone.crone import notification_scheduler
-from config import TOKEN
+from config import NOTIFICATION_TOKEN
 
-bot = Bot(token=TOKEN)
+bot = Bot(token=NOTIFICATION_TOKEN)
 dp = Dispatcher(bot)
 
 # chat = '1648627950'
