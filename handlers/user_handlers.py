@@ -69,8 +69,8 @@ async def start_user(message: Message | ChatJoinRequest):
                 markup = menu
             await bot.send_message(chat_id=chat_id, text=f'✅ Привіт, {name}! Це офіційний бот, що інформує про повітряну тривогу в будь-якій області України.\n\n⚡️Командою /region обери свою область', reply_markup=markup)
         else:
-            msg = await bot.send_message(chat_id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
-            await bot.delete_message(chat_id, msg['message_id'])
+            # msg = await bot.send_message(chat_id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
+            # await bot.delete_message(chat_id, msg['message_id'])
             await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
     except:
         logging.exception('\n'+'Start User log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
@@ -113,8 +113,9 @@ async def run(message: Message):
     except:
         logging.exception('\n'+'Get Alert Map log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
-@rate_limit(limit=10)
+
 @dp.callback_query_handler(text='subchanneldone')
+# @rate_limit(10, 'subchanneldone')
 async def channeldone(message: Message):
     try:
         chat_id = message.from_user.id
