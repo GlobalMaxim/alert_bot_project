@@ -3,14 +3,15 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from config import TOKEN
 
-storage = RedisStorage2(db=3,pool_size=10)
+storage = MemoryStorage()
 
 bot = Bot(TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
 async def on_shutdown(dp):
-    await dp.storage.close()
-    await dp.storage.wait_closed()
+    pass
+    # await dp.storage.close()
+    # await dp.storage.wait_closed()
     # bot.session.close()
 
 if __name__ == '__main__':
