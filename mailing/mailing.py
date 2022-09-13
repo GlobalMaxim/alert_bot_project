@@ -70,6 +70,7 @@ class Mailing():
         # regions = api_parse_info()
         if len(regions) > 0:
             with redis.Redis(db=2) as redis_client:
+                print('Start mailing time now: ', datetime.now())
                 for region in regions:
                     if redis_client.dbsize() > 0:
                         redis_keys = []
@@ -102,6 +103,7 @@ class Mailing():
                                 # user_data['is_sent_start_message'] = False
                                 logging.exception('\n\n'+'Send mailing log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
                 end = datetime.now()
+                print('End mailing time: ', datetime.now())
                 print('Mail sent with: ' + str(end - start))
 
     def reload_redis_instances(self):
