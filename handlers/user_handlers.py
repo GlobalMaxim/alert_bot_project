@@ -113,6 +113,7 @@ async def run(message: Message):
     except:
         logging.exception('\n'+'Get Alert Map log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
+@rate_limit(limit=10)
 @dp.callback_query_handler(text='subchanneldone')
 async def channeldone(message: Message):
     try:
@@ -147,6 +148,7 @@ async def send_mail(message: Message):
             await bot.send_message(message.from_user.id, ANSWER_TEXT, reply_markup=show_chanels())
     except:
         logging.exception('\n'+'Turn On alert log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+
 
 @dp.callback_query_handler()
 async def save_user_region(call: CallbackQuery):
@@ -198,7 +200,7 @@ async def bot_help(message: Message):
 async def register_user(message: Message):
     await message.answer('Героям Слава!🇺🇦')
 
-@rate_limit(limit=5)
+@rate_limit(limit=10)
 @dp.message_handler()
 async def register_user(message: Message):
     mail = Mailing()
