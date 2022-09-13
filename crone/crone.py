@@ -37,7 +37,7 @@ async def send_message_to_admin(bot):
 async def update_api_data_notification():
     api_data = api_parse_info()
     r = Redis_Preparation()
-    res = r.get_and_update_regions_from_redis(api_data)
+    res = r.get_and_update_regions_from_redis_notification(api_data)
     if res['is_updated'] == True:
         await send_notification_to_chanel(bot)
 

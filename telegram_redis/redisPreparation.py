@@ -36,6 +36,33 @@ class Redis_Preparation():
         except Exception as ex:
             logging.exception('\n'+'Get and update regions from redis error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
+    def get_and_update_regions_from_redis_notification(self, data):
+        try:
+            with redis.Redis(db=6) as redis_client:
+                reg_from_redis = redis_client.get('reg')
+                regs = []
+                for i in data:
+                    res = {}
+                    res['name'] = i['name']
+                    res['changed'] = i['changed']
+                    res['alert'] = i['alert']
+                    regs.append(res)
+                result = {}
+                # Если данные из апи отличаются от данных из Redis или Redis пустой, то сохраняем данные с АПИ в редис
+                if reg_from_redis is None or json.loads(reg_from_redis) != regs:
+                    redis_client.set('reg', json.dumps(regs))
+                    result['regions'] = regs
+                    result['is_updated'] = True
+                    print('Regions updated')
+                # Иначе возвращаем данные с редиса
+                else:
+                    not_updated = json.loads(reg_from_redis)
+                    result['regions'] = not_updated
+                    result['is_updated'] = False
+                return result
+        except Exception as ex:
+            logging.exception('\n'+'Get and update regions from redis error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+
     def get_updated_regions(self):
         try:
             with redis.Redis() as redis_client:
