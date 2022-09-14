@@ -151,7 +151,7 @@ class Mailing():
             logging.exception('\n'+'Stop mailing log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
     
     def is_user_alert_active(self, user_id):
-        with redis.Redis() as redis_client:
+        with redis.Redis(db=2) as redis_client:
             if redis_client.exists(str(user_id)):
                 return True
             else:
