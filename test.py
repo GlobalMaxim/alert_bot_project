@@ -54,20 +54,23 @@ async def parse_photo():
 
 
 def api_parse_info():
-    headers = {
-         "X-API-Key": API_KEY
-    }
-    url = 'https://alerts.com.ua/api/states'
-    req = requests.get(url, headers=headers)
-    res = json.loads(req.text)
-    # pattern = r'(.+)(:?\..+)'
-    # last_update = re.search(pattern, res['last_update']).group(1)
-    for i in res["states"]:
-            clear_date = datetime.fromisoformat(i['changed']).strftime("%H:%M %d-%m-%Y")
-            i['changed'] = clear_date
-            # i['last_update'] = str(datetime.strptime(last_update, '%Y-%m-%dT%H:%M:%S').strftime("%H:%M %d-%m-%Y"))
-            i.pop('id')
-    return res['states']
+    try:
+        headers = {
+            "X-API-Key": API_KEY
+        }
+        url = 'https://alerts.com.ua/api/states'
+        req = requests.get(url, headers=headers)
+        res = json.loads(req.text)
+        # pattern = r'(.+)(:?\..+)'
+        # last_update = re.search(pattern, res['last_update']).group(1)
+        for i in res["states"]:
+                clear_date = datetime.fromisoformat(i['changed']).strftime("%H:%M %d-%m-%Y")
+                i['changed'] = clear_date
+                # i['last_update'] = str(datetime.strptime(last_update, '%Y-%m-%dT%H:%M:%S').strftime("%H:%M %d-%m-%Y"))
+                i.pop('id')
+        return res['states']
+    except:
+        return False
 
 def main():
     # parse_photo()

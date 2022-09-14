@@ -9,20 +9,21 @@ class Redis_Preparation():
 
     logging.basicConfig(level=logging.WARNING, filename='log/redis-log.txt')
     
-    def get_and_update_regions_from_redis(self, data):
+    def get_and_update_regions_from_redis(self, data, is_correct=True):
         try:
             with redis.Redis(host="127.0.0.1", port=6379) as redis_client:
                 reg_from_redis = redis_client.get('reg')
                 regs = []
-                for i in data:
-                    res = {}
-                    res['name'] = i['name']
-                    res['changed'] = i['changed']
-                    res['alert'] = i['alert']
-                    regs.append(res)
-                result = {}
+                if data:
+                    for i in data:
+                        res = {}
+                        res['name'] = i['name']
+                        res['changed'] = i['changed']
+                        res['alert'] = i['alert']
+                        regs.append(res)
+                    result = {}
                 # Если данные из апи отличаются от данных из Redis или Redis пустой, то сохраняем данные с АПИ в редис
-                if reg_from_redis is None or json.loads(reg_from_redis) != regs:
+                if (reg_from_redis is None or json.loads(reg_from_redis) != regs) and is_correct == True:
                     redis_client.set('reg', json.dumps(regs))
                     result['regions'] = regs
                     result['is_updated'] = True
@@ -36,20 +37,21 @@ class Redis_Preparation():
         except Exception as ex:
             logging.exception('\n'+'Get and update regions from redis error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
-    def get_and_update_regions_from_redis_notification(self, data):
+    def get_and_update_regions_from_redis_notification(self, data, is_correct=True):
         try:
             with redis.Redis(db=6) as redis_client:
                 reg_from_redis = redis_client.get('reg')
                 regs = []
-                for i in data:
-                    res = {}
-                    res['name'] = i['name']
-                    res['changed'] = i['changed']
-                    res['alert'] = i['alert']
-                    regs.append(res)
+                if data:
+                    for i in data:
+                        res = {}
+                        res['name'] = i['name']
+                        res['changed'] = i['changed']
+                        res['alert'] = i['alert']
+                        regs.append(res)
                 result = {}
                 # Если данные из апи отличаются от данных из Redis или Redis пустой, то сохраняем данные с АПИ в редис
-                if reg_from_redis is None or json.loads(reg_from_redis) != regs:
+                if (reg_from_redis is None or json.loads(reg_from_redis) != regs) and is_correct == True:
                     redis_client.set('reg', json.dumps(regs))
                     result['regions'] = regs
                     result['is_updated'] = True
@@ -85,7 +87,10 @@ class Redis_Preparation():
                 else:
                     # print('Start not empty regions')
                     api_data = api_parse_info()
-                    regions_from_api = self.get_and_update_regions_from_redis(api_data)
+                    is_correct = True
+                    if api_data == False:
+                        is_correct = False
+                    regions_from_api = self.get_and_update_regions_from_redis(api_data,is_correct)
                     # print(regions_from_api)
                     # print('\n')
                     # print('Regions from redis default')

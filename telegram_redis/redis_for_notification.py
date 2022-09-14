@@ -21,7 +21,10 @@ def get_updated_regions():
                 return default['regions']
             else:
                 api_data = api_parse_info()
-                regions_from_api = regionsRedis.get_and_update_regions_from_redis(api_data)
+                is_correct = True
+                if api_data == False:
+                    is_correct = False
+                regions_from_api = regionsRedis.get_and_update_regions_from_redis_notification(api_data, is_correct)
                 regs_redis = regions_from_redis
                 changed_regs = []
                 # regions_from_redis = data.copy()
