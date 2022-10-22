@@ -17,4 +17,4 @@ async def on_shutdown(dp):
 if __name__ == '__main__':
     from handlers.admin_handlers import send_to_admin
     from handlers.user_handlers import dp
-    executor.start_polling(dp, on_startup=send_to_admin, on_shutdown=on_shutdown)
+    executor.start_polling(dp,skip_updates=True, on_startup=send_to_admin, on_shutdown=on_shutdown)

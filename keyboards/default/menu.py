@@ -1,4 +1,3 @@
-from re import L
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup,InlineKeyboardButton, ReplyKeyboardRemove
 from config import CHANEL_ID
 menu = ReplyKeyboardMarkup(
@@ -7,7 +6,7 @@ menu = ReplyKeyboardMarkup(
             KeyboardButton(text="🗺Отримати карту повітряних тривог"),
         ],
         [
-            KeyboardButton(text="📢Увімкнути повідомлення про тривогу"),
+            KeyboardButton(text="Обрати регіон"),
         ]
     ],
     resize_keyboard=True

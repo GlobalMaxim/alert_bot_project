@@ -21,14 +21,13 @@ logging.basicConfig(level=logging.WARNING, filename='log/redis-log.txt')
 async def parse_photo():
     try:
         options = Options()
-        if OS == 'Windows':
-            options.add_argument('--disable-gpu')
-            options.add_experimental_option('excludeSwitches', ['enable-automation',"enable-logging"])
-        elif OS == 'Ubuntu':
-            os.environ['DISPLAY'] = ':10.0'
-            options.add_argument('--disable-dev-shm-usage')
-            options.add_argument("--remote-debugging-port=9230")
-            options.add_argument("--no-sandbox")
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--disable-notifications')
+        options.add_argument('--disable-popup-blocking')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-blink-features=AutomationControlled')
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
         options.add_argument("--headless")
         options.add_argument("window-size=1920,1080")
         options.add_argument('log-level=3')
