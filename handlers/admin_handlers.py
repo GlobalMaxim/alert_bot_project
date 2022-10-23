@@ -33,7 +33,7 @@ async def send_to_admin(dp):
                 BotCommand('parse', 'Оновити фото'),
                 # BotCommand('show_mails_count', 'Кількість активних розсилок'),
                 BotCommand('save', 'Зберегти дані у БД'),
-                BotCommand('clear_mails_log', "Cкинути кеш розсилок"),
+                # BotCommand('clear_mails_log', "Cкинути кеш розсилок"),
                 # BotCommand('post', "Надіслати пповідомлення користувачу"),
 
                 # BotCommand('convert_redis', "Перенести редис")
