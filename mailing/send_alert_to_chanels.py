@@ -8,8 +8,8 @@ def send_text(region):
 
 async def send_regions_to_chanel(region, bot: Bot):
         match region['name']:
-            case "Черкаська область":
-                await bot.send_message(-1001524523161, send_text(region), parse_mode='HTML')
+            # case "Черкаська область":
+            #     await bot.send_message(-1001524523161, send_text(region), parse_mode='HTML')
             case "Харківська область":
                 await bot.send_message(-1001701593241, send_text(region), parse_mode='HTML')
             case "Вінницька область":
@@ -30,7 +30,7 @@ async def send_regions_to_chanel(region, bot: Bot):
                 await bot.send_message(-1001889349479, send_text(region), parse_mode='HTML')
             case "Полтавська область":
                 await bot.send_message(-1001884477607, send_text(region), parse_mode='HTML')
-            case "Тернопільска область":
+            case "Тернопільська область":
                 await bot.send_message(-1001832195839, send_text(region), parse_mode='HTML')
             case "Хмельницька область":
                 await bot.send_message(-1001121976501, send_text(region), parse_mode='HTML')
