@@ -87,10 +87,7 @@ class Redis_Preparation():
                 else:
                     # print('Start not empty regions')
                     api_data = api_parse_info()
-                    is_correct = True
-                    if api_data == False:
-                        is_correct = False
-                    regions_from_api = self.get_and_update_regions_from_redis(api_data,is_correct)
+                    regions_from_api = self.get_and_update_regions_from_redis(api_data)
                     # print(regions_from_api)
                     # print('\n')
                     # print('Regions from redis default')
