@@ -28,7 +28,7 @@ async def send_to_admin(dp):
     for admin in admin_id:
         try:
             await bot.set_my_commands([
-                BotCommand('set', 'Обрати регіон'),
+                BotCommand('region', 'Обрати регіон'),
                 BotCommand('show_all_data', 'Показати статистику'),
                 BotCommand('parse', 'Оновити фото'),
                 # BotCommand('show_mails_count', 'Кількість активних розсилок'),
