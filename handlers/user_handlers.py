@@ -77,18 +77,18 @@ async def run(message: Message):
         logging.exception('\n'+'Get Alert Map log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
 
-@dp.callback_query_handler(text='subchanneldone')
-# @rate_limit(10, 'subchanneldone')
-async def channeldone(message: Message):
-    try:
-        chat_id = message.from_user.id
-        await bot.delete_message(chat_id, message.message.message_id)
-        if await check_sub_chanel(CHANEL_ID[0], chat_id):
-            await bot.send_message(chat_id=chat_id, text=f'Доступ разблоковано!', reply_markup=menu)
-        else:
-            await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
-    except:
-        logging.exception('\n'+'Callback subchaneldone log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+# @dp.callback_query_handler(text='subchanneldone')
+# # @rate_limit(10, 'subchanneldone')
+# async def channeldone(message: Message):
+#     try:
+#         chat_id = message.from_user.id
+#         await bot.delete_message(chat_id, message.message.message_id)
+#         if await check_sub_chanel(CHANEL_ID[0], chat_id):
+#             await bot.send_message(chat_id=chat_id, text=f'Доступ разблоковано!', reply_markup=menu)
+#         else:
+#             await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
+#     except:
+#         logging.exception('\n'+'Callback subchaneldone log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         
 
 
@@ -113,27 +113,42 @@ async def send_mail(message: Message):
 
 @dp.callback_query_handler()
 async def save_user_region(call: CallbackQuery):
-    mail = Mailing()
-    try:
-        if call.data == 'cancel':
+    
+    if call.data == 'subchanneldone':
+        try:
+            chat_id = call.from_user.id
+            # await bot.delete_message(chat_id, message.message.message_id)
+            await call.message.delete()
+            if await check_sub_chanel(CHANEL_ID[0], chat_id):
+                await bot.send_message(chat_id=chat_id, text=f'Доступ разблоковано!', reply_markup=menu)
+            else:
+                await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
+            await call.answer()
+        except:
+            logging.exception('\n'+'Callback subchaneldone log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+
+    elif call.data == 'cancel':
+        try:
             await call.message.edit_reply_markup()
             await call.message.delete()
             await bot.send_message(chat_id=call.from_user.id, text= f'❗️Ви не обрали регіон', reply_markup=menu)
-            # mail.stop_mailing(call)
-        else:
-            link = re.search('(?:.+)(http.+)', call.data).group(1)
-            region = re.search('(.+)(?:http.+)',call.data).group(1)
-            await bot.answer_callback_query(callback_query_id=call.id, text= f'{region}', cache_time=1)
-            # await call.message.edit_reply_markup()
-            await call.message.delete()
-            # await mail.save_user_mailing(call)
-            # await bot.send_message(chat_id=call.from_user.id, text= f'✅Вітаю, ви будете отримумати сповіщення при повітряній тривозі у <b>"{call.data}"</b>', parse_mode=ParseMode.HTML, reply_markup=menu)
-            await bot.send_message(chat_id=call.from_user.id, text= f'Для того, щоб отримати сповіщення у вашому регіоні подпішіться на канал:\n<a href="{link}">📍{region}</a>', parse_mode=ParseMode.HTML, reply_markup=menu)
-            # await mail.check_is_active_user_region(bot, call)
-        await call.answer()
-        # print('Answered')
-    except:
-        logging.exception('\n'+'Save User Region log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+            await call.answer()
+        except:
+            logging.exception('\n'+'Save User Region log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+        # mail.stop_mailing(call)
+    # else:
+        # link = re.search('(?:.+)(http.+)', call.data).group(1)
+        # region = re.search('(.+)(?:http.+)',call.data).group(1)
+        # await bot.answer_callback_query(callback_query_id=call.id, text= f'{region}', cache_time=1)
+        # # await call.message.edit_reply_markup()
+        # await call.message.delete()
+        # # await mail.save_user_mailing(call)
+        # # await bot.send_message(chat_id=call.from_user.id, text= f'✅Вітаю, ви будете отримумати сповіщення при повітряній тривозі у <b>"{call.data}"</b>', parse_mode=ParseMode.HTML, reply_markup=menu)
+        # await bot.send_message(chat_id=call.from_user.id, text= f'Для того, щоб отримати сповіщення у вашому регіоні подпішіться на канал:\n<a href="{link}">📍{region}</a>', parse_mode=ParseMode.HTML, reply_markup=menu)
+        # await mail.check_is_active_user_region(bot, call)
+    
+    # print('Answered')
+    
         
 
 # @dp.message_handler(Text(equals=["❌Вимкнути сповіщення про тривогу"]))

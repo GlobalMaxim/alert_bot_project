@@ -4,7 +4,7 @@ from config import DATABASE_HOST, DATABASE_PASS, MYSQL_DATABASE, MYSQL_USER
 import redis
 import logging
 from aiogram.types import ParseMode
-from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNotFound
+from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNotFound, UserDeactivated
 
 def get_users_from_db():
     connection = mysql.connector.connect(user=MYSQL_USER, password=DATABASE_PASS, port='43306', host=DATABASE_HOST, database=MYSQL_DATABASE)
@@ -26,7 +26,7 @@ async def send_message_to_users(message, bot):
             try:
                 await bot.send_message(int(user), message, parse_mode=ParseMode.HTML,disable_web_page_preview=True)
                 client.set(user, int(1))
-            except (BotBlocked, CantInitiateConversation, ChatNotFound):
+            except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated):
                 client.set(user, int(0))
             except:
                 logging.exception('\n\n'+'Send private message log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
