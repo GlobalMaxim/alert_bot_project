@@ -9,7 +9,7 @@ class Redis_Preparation():
 
     logging.basicConfig(level=logging.WARNING, filename='log/redis-log.txt')
     
-    def get_and_update_regions_from_redis(self, data, is_correct=True):
+    def get_and_update_regions_from_redis(self, data):
         try:
             with redis.Redis(host="127.0.0.1", port=6379) as redis_client:
                 reg_from_redis = redis_client.get('reg')
@@ -23,7 +23,7 @@ class Redis_Preparation():
                         regs.append(res)
                     result = {}
                 # Если данные из апи отличаются от данных из Redis или Redis пустой, то сохраняем данные с АПИ в редис
-                if (reg_from_redis is None or json.loads(reg_from_redis) != regs) and is_correct == True:
+                if reg_from_redis is None or json.loads(reg_from_redis) != regs:
                     redis_client.set('reg', json.dumps(regs))
                     result['regions'] = regs
                     result['is_updated'] = True

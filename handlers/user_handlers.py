@@ -26,11 +26,7 @@ async def check_sub_chanel(chanel_id, user_id):
 @dp.chat_join_request_handler()
 async def start_user(message: Message | ChatJoinRequest):
     try:
-        # print('New invite user')
-        # if type(message) == ChatJoinRequest:
-        #     await message.approve()
         chat_id = message.from_user.id
-        # if await check_sub_chanel(CHANEL_ID[0], chat_id):
         r = Redis_Preparation()
         r.create_new_user_to_redis(message)
         
@@ -44,30 +40,19 @@ async def start_user(message: Message | ChatJoinRequest):
 @dp.message_handler(CommandStart())
 async def start_user(message: Message | ChatJoinRequest):
     try:
-        # if type(message) == ChatJoinRequest:
-        #     await message.approve()
         chat_id = message.from_user.id
         r = Redis_Preparation()
         r.create_new_user_to_redis(message)
-            
         if await check_sub_chanel(CHANEL_ID[0], chat_id):
             name = message.from_user.first_name
-            mail = Mailing()
-            is_user_uses_alert = mail.is_user_alert_active(message.from_user.id)
-            if is_user_uses_alert == True:
-                markup = menu_2
-            else:
-                markup = menu
-            await bot.send_message(chat_id=chat_id, text=f'✅ Привіт, {name}! Це офіційний бот, що інформує про повітряну тривогу в будь-якій області України.\n\n⚡️Командою /region обери свою область', reply_markup=markup)
+            await bot.send_message(chat_id=chat_id, text=f'✅ Привіт, {name}! Це офіційний бот, що інформує про повітряну тривогу в будь-якій області України.\n\n⚡️Командою /region обери свою область', reply_markup=menu)
         else:
-            # msg = await bot.send_message(chat_id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
-            # await bot.delete_message(chat_id, msg['message_id'])
             await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
     except:
         logging.exception('\n'+'Start User log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
 @dp.message_handler(Text(equals=["🗺Отримати карту повітряних тривог"]))
-@rate_limit(limit=10)
+@rate_limit(limit=7)
 async def run(message: Message):
     try:
         chat_id = message.from_user.id

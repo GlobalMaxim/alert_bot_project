@@ -18,19 +18,17 @@ async def execute_script():
 async def update_api_data():
     api_data = api_parse_info()
     r = Redis_Preparation()
-    is_correct = True
-    if api_data == False:
-        is_correct = False
-    res = r.get_and_update_regions_from_redis(api_data, is_correct)
-    if res['is_updated'] == True:
-        mail = Mailing()
-        await mail.send_mailing(bot)
-        await parse_photo()
-        # print('waiting for 20 sec sleep')
-        await asyncio.sleep(20)
-        # print('start parsing 2')
-        await parse_photo() 
-        # print('updated in 20 sec')
+    if api_data is not None:
+        res = r.get_and_update_regions_from_redis(api_data)
+        if res['is_updated'] == True:
+            mail = Mailing()
+            await mail.send_mailing_to_chanels(bot)
+            await parse_photo()
+            # print('waiting for 20 sec sleep')
+            await asyncio.sleep(20)
+            # print('start parsing 2')
+            await parse_photo() 
+            # print('updated in 20 sec')
     
 
 async def send_message_to_admin(bot):
@@ -50,7 +48,7 @@ async def update_api_data_notification():
 async def scheduler(bot):
     aioschedule.every().day.at('01:59').do(execute_script)
     aioschedule.every().day.at('02:00').do(send_message_to_admin, bot=bot)
-    aioschedule.every(15).seconds.do(update_api_data)
+    aioschedule.every(10).seconds.do(update_api_data)
     
     while True:
         await aioschedule.run_pending()

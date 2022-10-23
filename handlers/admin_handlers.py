@@ -47,16 +47,10 @@ async def send_to_admin(dp):
 @dp.message_handler(commands=['show_users_count'])
 async def count_user(message: Message):
     if message.from_user.id in admin_id:
-        mail = Mailing()
-        is_user_uses_alert = mail.is_user_alert_active(message.from_user.id)
-        if is_user_uses_alert == True:
-            markup = menu_2
-        else:
-            markup = menu
         db = Database()
         count = db.count_users()
         db.close_connection()
-        await message.answer(text=f'Всього {count} користувача', reply_markup=markup)
+        await message.answer(text=f'Всього {count} користувача', reply_markup=menu)
 
 # @dp.message_handler(commands=['convert_redis'])
 async def convert_redis(message: Message):
@@ -102,16 +96,10 @@ async def count_mails(message: Message):
 @dp.message_handler(commands=['save'])
 async def save(message: Message):
     if message.from_user.id in admin_id:
-        mail = Mailing()
-        is_user_uses_alert = mail.is_user_alert_active(message.from_user.id)
-        if is_user_uses_alert == True:
-            markup = menu_2
-        else:
-            markup = menu
         db = Database()
         values = db.save_data_to_db()
         db.close_connection()
-        await message.answer(f'Додано {values[0]} нових користувача та оновлено {values[1]} ', reply_markup=markup)
+        await message.answer(f'Додано {values[0]} нових користувача та оновлено {values[1]} ', reply_markup=menu)
 
 @dp.message_handler(commands=['post'])
 async def send_private_message(message: Message):
@@ -123,13 +111,8 @@ async def send_private_message(message: Message):
 async def save(message: Message):
     if message.from_user.id in admin_id:
         mail = Mailing()
-        is_user_uses_alert = mail.is_user_alert_active(message.from_user.id)
-        if is_user_uses_alert == True:
-            markup = menu_2
-        else:
-            markup = menu
         await parse_photo()
-        await message.answer('Фото оновлено', reply_markup=markup)
+        await message.answer('Фото оновлено', reply_markup=menu)
 
 # @dp.message_handler(commands=['delete'])
 # async def reset(message: Message):
@@ -143,16 +126,11 @@ async def save(message: Message):
 @dp.message_handler(commands=['show_all_data'])
 async def show_all_info(message: Message):
     if message.from_user.id in admin_id:
-        mail = Mailing()
-        is_user_uses_alert = mail.is_user_alert_active(message.from_user.id)
-        if is_user_uses_alert == True:
-            markup = menu_2
-        else:
-            markup = menu
+        # mail = Mailing()
         r = Redis_Preparation()
         new_users =  r.get_count_new_users()
-        mails_count = mail.get_number_mails()
-        await message.answer(text=f'Всього {mails_count} активних розсилок')
+        # mails_count = mail.get_number_mails()
+        # await message.answer(text=f'Всього {mails_count} активних розсилок')
         db = Database()
         await message.answer(text=f'За сьогодні {new_users} нових користувача')
         updated_users = r.get_count_user_updates()
@@ -164,7 +142,7 @@ async def show_all_info(message: Message):
         count = db.count_requests()
         if not count:
             count = 0
-        await message.answer(text=f'Всього {count} запитів', reply_markup=markup)
+        await message.answer(text=f'Всього {count} запитів', reply_markup=menu)
         db.close_connection()
 
 @dp.message_handler(commands=['show_all_requests_count'])

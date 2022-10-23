@@ -18,6 +18,7 @@ import re
 
 logging.basicConfig(level=logging.WARNING, filename='log/redis-log.txt')
 
+
 async def parse_photo():
     try:
         options = Options()
@@ -60,6 +61,9 @@ def api_parse_info():
         url = 'https://alerts.com.ua/api/states'
         req = requests.get(url, headers=headers)
         res = json.loads(req.text)
+        # with open('regions.json') as f:
+        #     res = json.load(f)
+
         # pattern = r'(.+)(:?\..+)'
         # last_update = re.search(pattern, res['last_update']).group(1)
         for i in res["states"]:
@@ -69,7 +73,7 @@ def api_parse_info():
                 i.pop('id')
         return res['states']
     except:
-        return False
+        return None
 
 def main():
     # parse_photo()

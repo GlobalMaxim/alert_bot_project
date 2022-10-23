@@ -1,4 +1,6 @@
 from datetime import datetime
+import re
+from aiogram import Bot
 import logging
 import redis
 import json
@@ -7,6 +9,7 @@ from test import  api_parse_info
 from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNotFound, UserDeactivated
 from aiogram.types import ParseMode
 from aioredis.exceptions import ConnectionError
+from mailing.send_alert_to_chanels import send_regions_to_chanel
 """
 1. При сохраненении региона пользователем, он получает уведомление о тревоге по крону (каждые 30 сек проверка).
 Если тревога активна сейчас, пользователь получает уведомление, если у него is_sent_start_message = False
@@ -57,14 +60,27 @@ class Mailing():
             #     users_from_redis = json.loads(self.mail_data)
             #     users_from_redis[str(user_id)] = user_data
             #     self.redis_client.set('mail', json.dumps(users_from_redis))
+        except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated):
+            pass
         except Exception as ex:
             logging.exception('\n'+'Save user mailing log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
-    # def batcher(self, iterable, n):
-    #     args = [iter(iterable)] * n
-    #     return izip_longest(*args)
+    async def send_mailing_to_chanels(self, bot: Bot):
+        regions = Redis_Preparation().get_updated_regions()
+        start = datetime.now()
+        if len(regions) > 0:
+            print('Start mailing time now: ', datetime.now())
+            for region in regions:
+                try:
+                    await send_regions_to_chanel(region, bot)
+                except:
+                    logging.exception('\n'+'Mailing to chanel log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
-    async def send_mailing(self, bot):
+        end = datetime.now()
+        print('End mailing time: ', datetime.now())
+        print('Mail sent with: ' + str(end - start))
+
+    async def send_mailing(self, bot: Bot):
         regions = Redis_Preparation().get_updated_regions()
         start = datetime.now()
         # regions = api_parse_info()
