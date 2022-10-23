@@ -130,7 +130,7 @@ async def save_user_region(call: CallbackQuery):
             # await bot.send_message(chat_id=call.from_user.id, text= f'✅Вітаю, ви будете отримумати сповіщення при повітряній тривозі у <b>"{call.data}"</b>', parse_mode=ParseMode.HTML, reply_markup=menu)
             await bot.send_message(chat_id=call.from_user.id, text= f'Для того, щоб отримати сповіщення у вашому регіоні подпішіться на канал:\n<a href="{link}">📍{region}</a>', parse_mode=ParseMode.HTML, reply_markup=menu)
             # await mail.check_is_active_user_region(bot, call)
-        # await call.answer()
+        await call.answer()
         # print('Answered')
     except:
         logging.exception('\n'+'Save User Region log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
