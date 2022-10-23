@@ -28,7 +28,7 @@ regions_markup = InlineKeyboardMarkup(row_width=1, one_time_keyboard=True, inlin
             # [InlineKeyboardButton(text="Черкаська область", callback_data='Черкаська областьhttps://t.me/+OswDcsqmIkNlNzJi')],
             [InlineKeyboardButton(text="Чернівецька область", url="https://t.me/alarm_chernivts")],
             [InlineKeyboardButton(text="Чернігівська область", url="https://t.me/alarm_chernihiv")],
-            [InlineKeyboardButton(text="м. Київ", url="https://t.me/alarm_kyiv")],
+            [InlineKeyboardButton(text="Київська область", url="https://t.me/alarm_kyiv")],
             [InlineKeyboardButton(text="⬅️Відмінити", callback_data="cancel")]
         ]
     )
