@@ -36,6 +36,9 @@ async def parse_photo():
         wd = Parser(webd)
         wd.openPage('https://alerts.in.ua')
         wd.setLocalStorage('darkMode', 'true')
+        wd.setLocalStorage('showOblastLabels', 'true')
+        wd.setLocalStorage('showRaion', "showRaion")
+        wd.setLocalStorage('liteMap', "false")
 
         webd.refresh()
         await asyncio.sleep(4)

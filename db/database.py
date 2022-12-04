@@ -89,20 +89,27 @@ class Database():
         try:
             r = Redis_Preparation()
             users = r.get_new_users_from_redis()
+
             # print(users)
             if users != None:
+                print(len(users))
                 users_arr = []
                 for val in users:
                     values = json.loads(val)
-                    user_id = int(values['user_id'])
-                    first_name = values['first_name']
-                    last_name = values['last_name']
-                    username = values['username']
-                    language_code = values['language_code']
-                    count_exec_script = values['count_exec_script']
-                    created_at = values['created_at']
-                    modified_at = values['modified_at']
-                    users_arr.append((user_id, first_name, last_name, username, language_code, count_exec_script, created_at, modified_at))
+                    # print(values)
+                    if isinstance(values, dict):
+                        try:
+                            user_id = int(values['user_id'])
+                            first_name = values['first_name']
+                            last_name = values['last_name']
+                            username = values['username']
+                            language_code = values['language_code']
+                            count_exec_script = values['count_exec_script']
+                            created_at = values['created_at']
+                            modified_at = values['modified_at']
+                            users_arr.append((user_id, first_name, last_name, username, language_code, count_exec_script, created_at, modified_at))
+                        except:
+                            pass
                 cursor = self.connection.cursor()
                 query = 'INSERT INTO users (user_id, first_name, last_name, username, language_code, count_exec_script, created_at, modified_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE user_id = user_id;'
                 cursor.executemany(query, users_arr)
@@ -112,8 +119,8 @@ class Database():
                 return str(count)
             else:
                 return str(0)
-        except:
-
+        except Exception as ex:
+            print(ex)
             logging.exception('\n'+'Add New Users Exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
             raise
         # finally:
@@ -178,7 +185,8 @@ class Database():
             client_user_updates.flushdb()
             print('Cache deleted')
             return [new_users, updated_users]
-        except:
+        except Exception as ex:
+            print(ex)
             logging.exception('\n'+'Save data to db exception!!! ' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
     
     def clear_redis(self):

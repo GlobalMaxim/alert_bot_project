@@ -1,4 +1,5 @@
 from aiogram import Bot
+from config import admin_id
 
 def send_text(region):
     if region['alert'] == True:
@@ -7,6 +8,7 @@ def send_text(region):
         return f'🟢<b>Відбій повітряної тривоги у "{region["name"]}"</b>\nОновлено у {region["changed"]}\n\n@Official_alarm_bot'
 
 async def send_regions_to_chanel(region, bot: Bot):
+    try:
         match region['name']:
             # case "Черкаська область":
             #     await bot.send_message(-1001524523161, send_text(region), parse_mode='HTML')
@@ -46,3 +48,5 @@ async def send_regions_to_chanel(region, bot: Bot):
                 await bot.send_message(-1001243567511, send_text(region), parse_mode='HTML')
             case "Чернівецька область":
                 await bot.send_message(-1001841438028, send_text(region), parse_mode='HTML')
+    except Exception as ex:
+        bot.send_message(admin_id[0], str(ex))

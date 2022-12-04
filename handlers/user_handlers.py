@@ -13,15 +13,20 @@ from aiogram.dispatcher.filters import CommandStart, CommandHelp
 from telegram_redis.redisPreparation import Redis_Preparation
 from utils.misc.throttling import rate_limit
 import logging
+from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNotFound, UserDeactivated
 
 logging.basicConfig(level=logging.WARNING, filename='log/user_handlers-log.txt')
 
 async def check_sub_chanel(chanel_id, user_id):
-    chat_member = await bot.get_chat_member(chanel_id, user_id)
-    if chat_member['status'] != 'left':
-        return True
-    else:
-        return False
+    try:
+        chat_member = await bot.get_chat_member(chanel_id, user_id)
+        if chat_member['status'] != 'left':
+            return True
+        else:
+            return False
+    except:
+        logging.exception('\n'+'check_sub_chanel log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+
 
 @dp.chat_join_request_handler()
 async def start_user(message: Message | ChatJoinRequest):
@@ -32,6 +37,8 @@ async def start_user(message: Message | ChatJoinRequest):
         
         name = message.from_user.first_name
         await bot.send_message(chat_id=chat_id, text=f'✅ Привіт, {name}! Це офіційний бот, що інформує про повітряну тривогу в будь-якій області України.\n\n⚡️Командою /region обери свою область', reply_markup=menu)
+    except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated):
+        pass
     except:
         logging.exception('\n'+'Start User log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
@@ -48,6 +55,8 @@ async def start_user(message: Message | ChatJoinRequest):
             await bot.send_message(chat_id=chat_id, text=f'✅ Привіт, {name}! Це офіційний бот, що інформує про повітряну тривогу в будь-якій області України.\n\n⚡️Командою /region обери свою область', reply_markup=menu)
         else:
             await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
+    except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated):
+        pass
     except:
         logging.exception('\n'+'Start User log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
@@ -73,6 +82,8 @@ async def run(message: Message):
             msg = await bot.send_message(chat_id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
             await bot.delete_message(chat_id, msg['message_id'])
             await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
+    except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated):
+        pass
     except:
         logging.exception('\n'+'Get Alert Map log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
@@ -107,6 +118,8 @@ async def send_mail(message: Message):
             msg = await bot.send_message(chat_id, "Доступ заблоковано!", reply_markup=ReplyKeyboardRemove())
             await bot.delete_message(chat_id, msg['message_id'])
             await bot.send_message(message.from_user.id, ANSWER_TEXT, reply_markup=show_chanels())
+    except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated):
+        pass
     except:
         logging.exception('\n'+'Turn On alert log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
@@ -133,6 +146,8 @@ async def save_user_region(call: CallbackQuery):
             await call.message.delete()
             await bot.send_message(chat_id=call.from_user.id, text= f'❗️Ви не обрали регіон', reply_markup=menu)
             await call.answer()
+        except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated):
+            pass
         except:
             logging.exception('\n'+'Save User Region log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         # mail.stop_mailing(call)
@@ -179,8 +194,10 @@ async def bot_help(message: Message):
 @rate_limit(limit=10)
 @dp.message_handler()
 async def register_user(message: Message):
-    chat_id = message.from_user.id
-    name = message.from_user.first_name
-    await bot.send_message(chat_id=chat_id, text=f'{name}, спробуйте ще раз', reply_markup=menu)
-
+    try:
+        chat_id = message.from_user.id
+        name = message.from_user.first_name
+        await bot.send_message(chat_id=chat_id, text=f'{name}, спробуйте ще раз', reply_markup=menu)
+    except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated):
+        pass
 

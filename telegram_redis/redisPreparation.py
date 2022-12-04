@@ -34,7 +34,7 @@ class Redis_Preparation():
                     result['regions'] = not_updated
                     result['is_updated'] = False
                 return result
-        except Exception as ex:
+        except:
             logging.exception('\n'+'Get and update regions from redis error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
     def get_and_update_regions_from_redis_notification(self, data, is_correct=True):
@@ -62,7 +62,7 @@ class Redis_Preparation():
                     result['regions'] = not_updated
                     result['is_updated'] = False
                 return result
-        except Exception as ex:
+        except:
             logging.exception('\n'+'Get and update regions from redis error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
     def get_updated_regions(self):
@@ -255,7 +255,8 @@ class Redis_Preparation():
                     return new_users
                 else:
                     return None
-        except:
+        except Exception as ex:
+            print(ex)
             logging.exception('\n'+'Create user updates error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         # with redis.Redis(db=1) as redis_client:
         #     if (redis_client.get('users')) != None:
@@ -273,7 +274,8 @@ class Redis_Preparation():
                     return user_updates
                 else:
                     return None
-        except:
+        except Exception as ex:
+            print(ex)
             logging.exception('\n'+'get_new_updates_from_redis error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
             # if (redis_client.get('updates')) != None:
             #     users = json.loads(redis_client.get('updates'))
