@@ -5,6 +5,7 @@ from config import DATABASE_HOST, DATABASE_PASS, MYSQL_DATABASE, MYSQL_USER
 import redis
 import logging
 import os
+from mailing.send_private_mailing import update_active_users_in_db
 
 from telegram_redis.redisPreparation import Redis_Preparation
 
@@ -117,7 +118,20 @@ class Database():
             raise
         # finally:
         #     self.save_data_to_file(users, 'new_users')
-            
+
+    def update_user_statuses(self):
+        try:
+            user_updates = update_active_users_in_db()
+            # print(user_updates)
+            cursor = self.connection.cursor()
+            query = 'UPDATE users set is_active = %s where user_id = %s;'
+            cursor.executemany(query, user_updates)
+            self.connection.commit()
+            count = cursor.rowcount
+            print(count)
+            cursor.close()
+        except Exception as ex:
+            print(ex)
 
     def add_user_updates_from_redis_to_db(self):
         try:

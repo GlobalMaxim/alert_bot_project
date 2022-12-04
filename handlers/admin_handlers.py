@@ -12,7 +12,7 @@ from crone.crone import scheduler
 from keyboards.mailing.regionsMarkup import regions_markup
 from mailing.mailing import Mailing
 from test import  parse_photo, api_parse_info
-from mailing.send_private_mailing import send_message_to_users
+from mailing.send_private_mailing import send_message_to_users, update_active_users_in_db
 
 
 async def send_to_admin(dp):
@@ -106,6 +106,21 @@ async def send_private_message(message: Message):
     if message.from_user.id in admin_id:
         msg = message.text[message.text.find(' '):]
         await send_message_to_users(msg, bot)
+
+@dp.message_handler(content_types=['photo'])
+async def send_private_message_with_photo(message: Message):
+    if message.from_user.id in admin_id and '/post_photo' in message.caption:
+        msg = message.caption[message.caption.find(' '):]
+        photo = message.photo[0].file_id
+        await send_message_to_users(msg, bot, photo)
+
+@dp.message_handler(commands=['update'])
+async def update_users_status(message: Message):
+    if message.from_user.id in admin_id:
+        db = Database()
+        db.update_user_statuses()
+        db.close_connection()
+        # update_active_users_in_db()
 
 @dp.message_handler(commands=['parse'])
 async def save(message: Message):
