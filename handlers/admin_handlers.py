@@ -12,7 +12,7 @@ from crone.crone import scheduler
 from keyboards.mailing.regionsMarkup import regions_markup
 from mailing.mailing import Mailing
 from test import  parse_photo, api_parse_info
-from mailing.send_private_mailing import send_message_to_users, update_active_users_in_db
+from mailing.send_private_mailing import send_message_to_users, update_active_users_in_db, get_size_active_users
 
 
 async def send_to_admin(dp):
@@ -114,13 +114,12 @@ async def send_private_message_with_photo(message: Message):
         photo = message.photo[0].file_id
         await send_message_to_users(msg, bot, photo)
 
-@dp.message_handler(commands=['update'])
-async def update_users_status(message: Message):
-    if message.from_user.id in admin_id:
-        db = Database()
-        db.update_user_statuses()
-        db.close_connection()
-        # update_active_users_in_db()
+# @dp.message_handler(commands=['update'])
+# async def update_users_status(message: Message):
+#     if message.from_user.id in admin_id:
+#         db = Database()
+#         db.update_user_statuses()
+#         db.close_connection()
 
 @dp.message_handler(commands=['parse'])
 async def save(message: Message):
@@ -157,9 +156,11 @@ async def show_all_info(message: Message):
         count = db.count_requests()
         if not count:
             count = 0
-        await message.answer(text=f'Всього {count} запитів', reply_markup=menu)
+        await message.answer(text=f'Всього {count} запитів')
         db.close_connection()
-
+        count_active = get_size_active_users()
+        await message.answer(text=f'Всього {count_active} активних користувачів', reply_markup=menu)
+        
 @dp.message_handler(commands=['show_all_requests_count'])
 async def count_user(message: Message):
     if message.from_user.id in admin_id:

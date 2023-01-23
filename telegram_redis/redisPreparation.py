@@ -96,7 +96,6 @@ class Redis_Preparation():
                     # print(regions_from_redis)
                     # print(regions_from_api)
                     changed_regs = []
-                    # regions_from_redis = data.copy()
                     if len(regions_from_redis) > 0:
                         for region_api in regions_from_api['regions']:
                             for key, reg_redis in enumerate(regs_redis.copy()):
@@ -201,8 +200,9 @@ class Redis_Preparation():
                     'username': username, 
                     'language_code': language_code, 
                     'count_exec_script': 0,
-                    'created_at':str(datetime.now().strftime("%d-%m-%Y %H:%M")), 
-                    'modified_at': str(datetime.now().strftime("%d-%m-%Y %H:%M"))
+                    'created_at':str(datetime.now().strftime("%Y-%m-%d %H:%M:%S")), 
+                    'modified_at': str(datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+                    'is_active': 1
                 }
 
                 if redis_client.get(str(user_id)) is None:
@@ -225,7 +225,7 @@ class Redis_Preparation():
                 user_data = {
                     'user_id':user_id,
                     'count_exec_script': 1, 
-                    'modified_at': str(datetime.now().strftime("%d-%m-%Y %H:%M"))
+                    'modified_at': str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                 }
                 user_from_redis = redis_client.get(str(user_id))
                 if user_from_redis is None:
@@ -236,7 +236,7 @@ class Redis_Preparation():
                     user_update_redis = json.loads(user_from_redis)
                     
                     user_update_redis['count_exec_script'] += 1
-                    user_update_redis['modified_at'] = str(datetime.now().strftime("%d-%m-%Y %H:%M"))
+                    user_update_redis['modified_at'] = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                     redis_client.set(str(user_id), json.dumps(user_update_redis))
                     # else:
                     #     updates_from_redis[user_id] = user_data

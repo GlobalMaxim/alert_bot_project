@@ -1,3 +1,4 @@
+*.rdb
 config.py
 __pycache__
 /data
@@ -6,4 +7,5 @@ venv
 imagePreparator.py
 log
 log/redis-log.txt
-docker
+docker/*
+*.txt

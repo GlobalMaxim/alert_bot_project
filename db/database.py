@@ -107,11 +107,12 @@ class Database():
                             count_exec_script = values['count_exec_script']
                             created_at = values['created_at']
                             modified_at = values['modified_at']
-                            users_arr.append((user_id, first_name, last_name, username, language_code, count_exec_script, created_at, modified_at))
+                            is_active = values['is_active']
+                            users_arr.append((user_id, first_name, last_name, username, language_code, count_exec_script, created_at, modified_at, is_active))
                         except:
                             pass
                 cursor = self.connection.cursor()
-                query = 'INSERT INTO users (user_id, first_name, last_name, username, language_code, count_exec_script, created_at, modified_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE user_id = user_id;'
+                query = 'INSERT INTO users (user_id, first_name, last_name, username, language_code, count_exec_script, created_at, modified_at, is_active) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE user_id = user_id;'
                 cursor.executemany(query, users_arr)
                 self.connection.commit()
                 count = cursor.rowcount
