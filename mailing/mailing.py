@@ -83,7 +83,6 @@ class Mailing():
     async def send_mailing(self, bot: Bot):
         regions = Redis_Preparation().get_updated_regions()
         start = datetime.now()
-        # regions = api_parse_info()
         if len(regions) > 0:
             with redis.Redis(db=2) as redis_client:
                 print('Start mailing time now: ', datetime.now())

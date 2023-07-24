@@ -8,7 +8,6 @@ from telegram_redis.redis_for_notification import get_updated_regions
 
 async def send_notification_to_chanel(bot):
     regions = get_updated_regions()
-        # regions = api_parse_info()
     if len(regions) > 0:
         for region in regions:
             if region['alert'] == True:

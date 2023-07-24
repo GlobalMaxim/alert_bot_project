@@ -12,7 +12,10 @@ class Redis_Preparation():
     def get_and_update_regions_from_redis(self, data):
         try:
             with redis.Redis(host="127.0.0.1", port=6379) as redis_client:
-                reg_from_redis = redis_client.get('reg')
+                try:
+                    reg_from_redis = redis_client.get('reg')
+                except:
+                    reg_from_redis = None
                 regs = []
                 if data:
                     for i in data:
@@ -40,7 +43,10 @@ class Redis_Preparation():
     def get_and_update_regions_from_redis_notification(self, data, is_correct=True):
         try:
             with redis.Redis(db=6) as redis_client:
-                reg_from_redis = redis_client.get('reg')
+                try:
+                    reg_from_redis = redis_client.get('reg')
+                except:
+                    reg_from_redis = None
                 regs = []
                 if data:
                     for i in data:
@@ -129,7 +135,10 @@ class Redis_Preparation():
     def get_regions_from_redis(self):
         try:
             with redis.Redis() as redis_client:
-                data = json.loads(redis_client.get('reg'))
+                try:
+                    data = json.loads(redis_client.get('reg'))
+                except:
+                    data = None
                 active_regions = {}
                 regs = []
                 for i in data:

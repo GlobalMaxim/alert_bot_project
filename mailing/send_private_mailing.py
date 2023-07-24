@@ -43,8 +43,9 @@ def get_size_active_users():
 async def send_message_to_users(message,bot: Bot,photo = None):
     logging.basicConfig(level=logging.WARNING, filename='log/private-message-log.txt')
     users = get_users_from_db()
-
+    print("Started private mailing ", datetime.now())
     # users = [389837052, 2121074781, 2147483647, 2133124028]
+    count = 0
     with redis.Redis(db=5) as client:
         for user in users:
             try:
@@ -53,11 +54,13 @@ async def send_message_to_users(message,bot: Bot,photo = None):
                 else:
                     await bot.send_message(int(user), message, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
                 client.set(f"{user}:1", int(1))
+                count += 1
             except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated):
                 client.set(f"{user}:0", int(0))
             except Exception as ex:
                 print(ex)
                 logging.exception('\n\n'+'Send private message log! Some Strange Exception' + '\n\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
-
+    await bot.send_message(5327208068, message=f"Рассылка завершена. Уведомление получиди {count} пользователей.")
+    print("Finished private mailing ", datetime.now())
 # rename_user_in_redis()
 # print(get_size_active_users())

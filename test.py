@@ -37,7 +37,9 @@ async def parse_photo():
         wd.openPage('https://alerts.in.ua')
         wd.setLocalStorage('darkMode', 'true')
         wd.setLocalStorage('showOblastLabels', 'true')
-        wd.setLocalStorage('showRaion', "showRaion")
+        wd.setLocalStorage('showRaion', "false")
+        wd.setLocalStorage('showDurationGradient', "true")
+        wd.setLocalStorage('interactiveMap', "true")
         wd.setLocalStorage('liteMap', "false")
 
         webd.refresh()
@@ -70,6 +72,10 @@ def api_parse_info():
         # pattern = r'(.+)(:?\..+)'
         # last_update = re.search(pattern, res['last_update']).group(1)
         for i in res["states"]:
+            if i["name"] == "Луганська область":
+                i.pop('id')
+                i['changed'] = "19:45 04-04-2022"
+            else:
                 clear_date = datetime.fromisoformat(i['changed']).strftime("%H:%M %d-%m-%Y")
                 i['changed'] = clear_date
                 # i['last_update'] = str(datetime.strptime(last_update, '%Y-%m-%dT%H:%M:%S').strftime("%H:%M %d-%m-%Y"))

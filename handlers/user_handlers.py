@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import re
 from aiogram.types import ParseMode, ChatJoinRequest
 from mailing.mailing import Mailing
@@ -68,7 +68,8 @@ async def run(message: Message):
         if await check_sub_chanel(CHANEL_ID[0], chat_id):
             r = Redis_Preparation()
             res = r.get_regions_from_redis()
-            current_date = str(datetime.now().strftime('%H:%M %d-%m-%Y'))
+            current_datetime = datetime.now() + timedelta(hours=1)
+            current_date = current_datetime.strftime('%H:%M %d-%m-%Y')
             if len(res['regions']) > 0:
                 await message.answer('Тривоги працюють в наступних областях:')
                 for i in res['regions']:
