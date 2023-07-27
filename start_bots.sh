@@ -6,7 +6,7 @@ screen -d -m -S 3 bash -c 'source venv/bin/activate && python3 region_telebot.py
 screen -d -m -S 5 bash -c 'source venv/bin/activate && python3 region_telebot.py 5'
 screen -d -m -S 8 bash -c 'source venv/bin/activate && python3 region_telebot.py 8'
 screen -d -m -S 9 bash -c 'source venv/bin/activate && python3 region_telebot.py 9'
-screen -d -m -S 12 bash -c 'source venv/bin/activate && python3 region_telebot.py 24'
+screen -d -m -S 12 bash -c 'source venv/bin/activate && python3 region_telebot.py 12'
 screen -d -m -S 14 bash -c 'source venv/bin/activate && python3 region_telebot.py 14'
 screen -d -m -S 15 bash -c 'source venv/bin/activate && python3 region_telebot.py 15'
 screen -d -m -S 16 bash -c 'source venv/bin/activate && python3 region_telebot.py 16'
