@@ -4,11 +4,12 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import *
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium import webdriver
 
 
 
 class Parser():
-    def __init__(self, driver):
+    def __init__(self, driver: webdriver):
         self.driver = driver
 
     def openPage(self, url):

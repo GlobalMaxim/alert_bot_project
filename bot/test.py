@@ -3,6 +3,9 @@ import asyncio
 import logging
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 # from webdriver_manager.chrome import ChromeDriverManager
 import requests
 import redis
@@ -46,6 +49,10 @@ async def parse_photo():
 
         webd.refresh()
         await asyncio.sleep(4)
+        webd.find_element(By.XPATH, ".//div[@title='Ввімкнути/ввимкнути мінімалістичний режим']").click()
+        WebDriverWait(webd, timeout=5).until(
+                                EC.invisibility_of_element_located((By.XPATH, '//i[@class="fa-solid fa-maximize desktop-only"]')))
+        
         # await wd.wait('//div[@id="map"]/*[name()="svg"]/*[name()="g"]//*[@id="a"]')
         # await asyncio.sleep(1)
         wd.getImage('bot/screenshot.png')
