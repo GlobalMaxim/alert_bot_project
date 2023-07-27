@@ -4,6 +4,7 @@ __pycache__
 /data
 screenshot.png
 venv
+.env
 imagePreparator.py
 log
 log/redis-log.txt
