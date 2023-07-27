@@ -2,7 +2,7 @@ import aioschedule
 import asyncio
 
 from bot.db.database import Database
-from bot.mailing.mailing import Mailing
+# from bot.mailing.mailing import Mailing
 from bot.mailing.send_notification_to_chanel import send_notification_to_chanel
 from bot.telegram_redis.redisPreparation import Redis_Preparation
 from bot.test import  parse_photo, api_parse_info
@@ -22,14 +22,14 @@ async def update_api_data():
     if api_data is not None:
         res = r.get_and_update_regions_from_redis(api_data)
         if res['is_updated'] == True:
-            mail = Mailing()
+            # mail = Mailing()
             r.set_updated_regions_to_redis_db()
             # await mail.send_mailing_to_chanels(bot)
             await parse_photo()
             # print('waiting for 20 sec sleep')
             await asyncio.sleep(20)
             # print('start parsing 2')
-            await parse_photo() 
+            # await parse_photo() 
             # print('updated in 20 sec')
     
 

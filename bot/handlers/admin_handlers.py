@@ -1,8 +1,6 @@
 import asyncio
 from aiogram.types import ParseMode
 from aiogram.types import Message, BotCommand, BotCommandScopeChat, BotCommandScopeDefault,CallbackQuery, BotCommandScopeChatMember
-from aiogram.dispatcher.filters import Command, Text
-from typing import Union
 
 from telebot import dp, bot
 from bot.config import ADMIN_ID, CHANEL_ID
