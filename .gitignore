@@ -1,5 +1,4 @@
 *.rdb
-config.py
 __pycache__
 /data
 screenshot.png

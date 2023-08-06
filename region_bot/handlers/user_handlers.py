@@ -3,7 +3,7 @@ import re
 import logging
 
 from aiogram.types import ParseMode, ChatJoinRequest
-from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNotFound, UserDeactivated
+from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNotFound, UserDeactivated, CantTalkWithBots
 from aiogram.types import Message, CallbackQuery
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.dispatcher.filters import Text
@@ -28,7 +28,7 @@ async def check_sub_chanel(chanel_id, user_id):
         logging.exception('\n'+'check_sub_chanel log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
 
-@rate_limit(limit=10)
+@rate_limit(limit=5)
 # @dp.chat_join_request_handler()
 @dp.message_handler(CommandStart())
 async def start_user(message: Message | ChatJoinRequest):
@@ -47,13 +47,13 @@ async def start_user(message: Message | ChatJoinRequest):
         logging.exception('\n'+'Start User log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
 
-@rate_limit(limit=10)
-# @dp.chat_join_request_handler()
+# @rate_limit(limit=5)
 @dp.message_handler(Text(equals="Увімкнути сповіщення про тривогу"))
 async def start_user(message: Message):
     try:
         if await check_sub_chanel(CHANEL_ID[0], message.from_user.id):
             save_user_mailing(message, region_data)
+            # stop_mailing(message, region_data)
             await bot.send_message(chat_id=message.from_user.id, text= f'✅Вітаю, ви будете отримумати сповіщення при повітряній тривозі у <b>\"{region_data["name"]}\"</b>', parse_mode=ParseMode.HTML, reply_markup=menu_2)
             await check_is_active_user_region(bot, message, region_data)
         else:
@@ -83,13 +83,25 @@ async def save_user_region(call: CallbackQuery):
         try:
             chat_id = call.from_user.id
             # await bot.delete_message(chat_id, message.message.message_id)
-            await call.message.delete()
+            await bot.delete_message(chat_id, call.message.message_id)
+            # await call.message.delete()
             if await check_sub_chanel(CHANEL_ID[0], chat_id):
                 is_active_alert = is_user_alert_active(chat_id, region_data)
-                await bot.send_message(chat_id=chat_id, text=f'Доступ разблоковано!', reply_markup=menu_2 if is_active_alert else menu)
+                await bot.send_message(chat_id=chat_id, text=f'✅ Привіт, {call.from_user.first_name}! Це офіційний бот, що інформує про повітряну тривогу в обраній області України.', reply_markup=menu_2 if is_active_alert else menu)
             else:
                 await bot.send_message(chat_id, ANSWER_TEXT, reply_markup=show_chanels())
         except:
             logging.exception('\n'+'Callback subchaneldone log! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
         finally:
             await call.answer()
+
+@rate_limit(limit=5)
+@dp.message_handler()
+async def register_user(message: Message):
+    try:
+        chat_id = message.from_user.id
+        name = message.from_user.first_name
+        await bot.send_message(chat_id=chat_id, text=f'{name}, спробуйте ще раз', reply_markup=menu)
+    except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated, CantTalkWithBots):
+        pass
+

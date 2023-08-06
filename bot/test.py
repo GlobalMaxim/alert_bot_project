@@ -5,14 +5,16 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager 
 from selenium.webdriver.common.by import By
 # from webdriver_manager.chrome import ChromeDriverManager
 import requests
 import redis
 import time
 from datetime import datetime
-from selenium.webdriver.chrome.options import Options
+# from selenium.webdriver import ChromeOptions
 from bot.config import API_KEY
+from selenium import webdriver
 import os
 from bot.parser import Parser
 from bot.utils.imagePreparator import ImagePreparator
@@ -24,20 +26,19 @@ logging.basicConfig(level=logging.WARNING, filename='bot/log/redis-log.txt')
 
 async def parse_photo():
     try:
-        options = Options()
-        options.add_argument("--remote-debugging-port=9230")
-        options.add_argument("start-maximized")
+        options = webdriver.ChromeOptions()
+        os.environ['DISPLAY'] = ':10.0'
         options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--disable-notifications')
-        options.add_argument('--disable-popup-blocking')
-        options.add_argument('--log-level=3')
+        options.add_argument("--remote-debugging-port=9230")
+        options.add_argument("window-size=1920,1080")
+        options.add_argument("--headless")
         options.add_argument('--no-sandbox')
-        options.add_argument('--headless')
+        options.add_argument("start-maximized")
         options.add_argument("--disable-blink-features")
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
-        webd = webdriver.Chrome(options=options)
+        webd = webdriver.Chrome(options=options, service=Service(executable_path="/usr/bin/chromedriver"))
         wd = Parser(webd)
         wd.openPage('https://alerts.in.ua')
         wd.setLocalStorage('darkMode', 'true')
@@ -45,11 +46,13 @@ async def parse_photo():
         wd.setLocalStorage('showRaion', "false")
         wd.setLocalStorage('showDurationGradient', "true")
         wd.setLocalStorage('interactiveMap', "true")
-        wd.setLocalStorage('liteMap', "false")
+        # wd.setLocalStorage('liteMap', "false")
 
         webd.refresh()
         await asyncio.sleep(4)
-        webd.find_element(By.XPATH, ".//div[@title='Ввімкнути/ввимкнути мінімалістичний режим']").click()
+        WebDriverWait(webd, timeout=5).until(
+                                EC.visibility_of_element_located((By.XPATH, "//div[@title='Ввімкнути/ввимкнути мінімалістичний режим']")))
+        webd.find_element(By.XPATH, "//div[@title='Ввімкнути/ввимкнути мінімалістичний режим']").click()
         WebDriverWait(webd, timeout=5).until(
                                 EC.invisibility_of_element_located((By.XPATH, '//i[@class="fa-solid fa-maximize desktop-only"]')))
         

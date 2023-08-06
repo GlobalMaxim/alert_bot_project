@@ -6,6 +6,7 @@ from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNo
 import logging
 from aiogram import Bot
 from bot.telegram_redis.redisPreparation import Redis_Preparation
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup,InlineKeyboardButton
 # from region_telebot import region_data
 
 def save_user_mailing(message: Message, region_data):
@@ -97,8 +98,13 @@ async def check_is_active_user_region(bot: Bot, message: Message, region_data):
     regions = Redis_Preparation().get_regions_from_redis()
     # alert_regions = []
     for region in regions['regions']:
-        if region['name'] == region_data['name']:
-            await bot.send_message(user_id,f'🔴<b>Повітряна тривога у "{region["name"]}"</b>\nПочаток тривоги у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
+        if str(region['id']) == str(region_data['id']):
+            region_link = region_data['link'].replace('@', '')
+            
+            keyboard = InlineKeyboardMarkup(row_width=1)
+            btn = InlineKeyboardButton(text = "Поділитися", url = f"https://t.me/share/url?url=https%3A//t.me/{region_link}")
+            keyboard.insert(btn)
+            await bot.send_message(user_id,f'🔴<b>Повітряна тривога у "{region["name"]}"</b>\nПочаток тривоги у {region["changed"]}\n\n{region_data["link"]}', parse_mode=ParseMode.HTML, reply_markup=keyboard if region_link else None)
             with redis.Redis(db=2) as redis_client:
                 user = json.loads(redis_client.get(f"{region_data['id']}:{user_id}"))
                 user['is_sent_start_message'] = True

@@ -3,7 +3,7 @@ import re
 import logging
 
 
-from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNotFound, UserDeactivated
+from aiogram.utils.exceptions import BotBlocked,CantInitiateConversation, ChatNotFound, UserDeactivated, CantTalkWithBots
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove, ParseMode, ChatJoinRequest
 from aiogram.dispatcher.filters import CommandStart, CommandHelp, Text
 
@@ -74,7 +74,7 @@ async def run(message: Message):
                 await message.answer('Тривоги працюють в наступних областях:')
                 for i in res['regions']:
                     await message.answer(f"🛑 <b>{i['name']}</b>\nПочаток тривоги у {i['changed']}\n@Official_alarm_bot", parse_mode=ParseMode.HTML)
-                await message.answer_photo(photo=open('bot/screenshot.png', 'rb'), caption=f"<b>❗️Карта повітряних тривог станом на {current_date}</b>\n\n@Official_alarm_bot", parse_mode=ParseMode.HTML, reply_markup=menu)
+                await message.answer_photo(photo=open('bot/screenshot.png', 'rb'), caption=f"<b>❗️Карта повітряних тривог станом на {current_date}</b>\n\n@Official_alarm_bot", parse_mode=ParseMode.HTML)
             else:
                 
                 await message.answer('Тривог зараз немає!')
@@ -113,7 +113,8 @@ async def save_user_region(call: CallbackQuery):
         try:
             chat_id = call.from_user.id
             # await bot.delete_message(chat_id, message.message.message_id)
-            await call.message.delete()
+            await bot.delete_message(chat_id, call.message.message_id)
+            # await call.message.delete()
             if await check_sub_chanel(CHANEL_ID[0], chat_id):
                 await bot.send_message(chat_id=chat_id, text=f'Доступ разблоковано!', reply_markup=menu)
             else:
@@ -125,7 +126,7 @@ async def save_user_region(call: CallbackQuery):
     elif call.data == 'cancel':
         try:
             await call.message.edit_reply_markup()
-            await call.message.delete()
+            await bot.delete_message(chat_id=call.from_user.id, message_id=call.message.message_id)
             await bot.send_message(chat_id=call.from_user.id, text= f'❗️Ви не обрали регіон', reply_markup=menu)
             await call.answer()
         except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated):
@@ -150,6 +151,6 @@ async def register_user(message: Message):
         chat_id = message.from_user.id
         name = message.from_user.first_name
         await bot.send_message(chat_id=chat_id, text=f'{name}, спробуйте ще раз', reply_markup=menu)
-    except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated):
+    except (BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated, CantTalkWithBots):
         pass
 

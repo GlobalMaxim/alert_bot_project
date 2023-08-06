@@ -8,6 +8,7 @@ import redis
 from region_bot.utils.mailing import get_info_from_updated_region
 from aiogram.types import ParseMode
 from aiogram.utils.exceptions import BotBlocked, CantInitiateConversation, ChatNotFound, UserDeactivated
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup,InlineKeyboardButton
 # from region_telebot import region_data
 # async def update_api_data():
 #     api_data = api_parse_info()
@@ -42,17 +43,21 @@ async def send_mailing(bot: Bot, region_data):
                     for user in redis_client.scan_iter(f"{region_data['id']}:*"):
                         redis_keys.append(user)
                     users = redis_client.mget(redis_keys)
+                    region_link = region_data['link'].replace('@', '')
+                    keyboard = InlineKeyboardMarkup(row_width=1)
+                    btn = InlineKeyboardButton(text = "Поділитися", url = f"https://t.me/share/url?url=https%3A//t.me/{region_link}")
+                    keyboard.insert(btn)
                     for user in users:
                         user_data = json.loads(user)
                         try:
                             if region['id'] == user_data['region_id'] and user_data['is_sent_start_message'] == False and region['alert'] == True:
-                                await bot.send_message(int(user_data['user_id']),f'🔴<b>Повітряна тривога у "{region["name"]}"</b>\nПочаток тривоги у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
+                                await bot.send_message(int(user_data['user_id']),f'🔴<b>Повітряна тривога у "{region["name"]}"</b>\nПочаток тривоги у {region["changed"]}\n\n{region_data["link"]}', parse_mode=ParseMode.HTML, reply_markup=keyboard if region_link else None)
                                 user_data['is_sent_start_message'] = True
                                 user_data['is_sent_stop_message'] = False
                                 # print(f'Need to send message to user {key}')
                             
                             elif region['id'] == user_data['region_id'] and user_data['is_sent_start_message'] == True and user_data['is_sent_stop_message'] == False and region['alert'] == False:
-                                await bot.send_message(int(user_data['user_id']), f'🟢<b>Відбій повітряної тривоги у "{region["name"]}"</b>\nОновлено у {region["changed"]}\n\n@Official_alarm_bot', parse_mode=ParseMode.HTML)
+                                await bot.send_message(int(user_data['user_id']), f'🟢<b>Відбій повітряної тривоги у "{region["name"]}"</b>\nОновлено у {region["changed"]}\n\n{region_data["link"]}', parse_mode=ParseMode.HTML, reply_markup=keyboard if region_link else None)
                                 user_data['is_sent_stop_message'] = True
                                 user_data['is_sent_start_message'] = False
 

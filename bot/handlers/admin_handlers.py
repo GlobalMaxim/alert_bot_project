@@ -16,8 +16,6 @@ from bot.mailing.send_private_mailing import send_message_to_users, update_activ
 
 async def send_to_admin(dp):
     asyncio.create_task(scheduler(bot))
-    # import middlewares
-    # middlewares.setup(dp)
     
     
     await bot.set_my_commands([
@@ -174,3 +172,11 @@ async def count_user(message: Message):
     if message.from_user.id in ADMIN_ID:
         db = Redis_Preparation()
         db.get_updated_regions()
+
+@dp.message_handler(commands=['get_users'])
+async def count_user(message: Message):
+    if message.from_user.id in ADMIN_ID:
+        db = Redis_Preparation()
+        region_id = message.text[message.text.find(' '):].strip()
+        count = db.get_count_user_notification_in_region(region_id)
+        await message.answer(f"Користувачів з розсилкою: {count}")

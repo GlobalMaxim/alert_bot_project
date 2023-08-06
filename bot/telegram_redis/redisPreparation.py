@@ -104,14 +104,13 @@ class Redis_Preparation():
 
                     redis_client.set('updated_regs', json.dumps(regs_redis))
                     return changed_regs
-
         except:
             logging.exception('\n'+'Get updated regions error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
 
     def set_updated_regions_to_redis_db(self):
         updated_regions = self.get_updated_regions()
         with redis.Redis(db=3) as redis_client:
-            redis_client.flushdb()
+            # redis_client.flushdb()
             for region in updated_regions:
                 redis_client.set(f'{region["id"]}:{int(region["alert"])}', json.dumps(region))
         print(updated_regions)
@@ -299,3 +298,14 @@ class Redis_Preparation():
                     return 0
         except:
             logging.exception('\n'+'get_count_user_updates error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
+        
+    def get_count_user_notification_in_region(self, region_id):
+        try:
+            with redis.Redis(db=2) as redis_client:
+                redis_keys = []
+                if redis_client.dbsize() > 0:
+                    for user in redis_client.scan_iter(f"{region_id}:*"):
+                        redis_keys.append(user)
+                return len(redis_keys)
+        except:
+            logging.exception('\n'+'get_count_user_notification_in_region error! ' + '\n' + str(datetime.now().strftime("%d-%m-%Y %H:%M"))+ '\n')
